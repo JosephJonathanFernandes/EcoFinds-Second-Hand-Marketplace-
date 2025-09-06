@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-6">
+    <div class="card p-4 shadow-sm mb-4">
+      <div class="text-center">
+        <img src="{{ current_user.avatar or 'https://cdn-icons-png.flaticon.com/512/149/149071.png' }}" class="rounded-circle mb-3" alt="Avatar" style="width:120px;height:120px;object-fit:cover;border:4px solid #43ea7c;background:#e6ffe6;">
+        <h3 class="fw-bold text-success">{{ current_user.username }}</h3>
+        <p class="text-muted">{{ current_user.email }}</p>
+      </div>
+      <hr>
+      <div class="mb-3">
+        <label class="form-label">Edit Profile</label>
+        <form method="POST" enctype="multipart/form-data">
+          <input type="text" name="username" class="form-control mb-2" value="{{ current_user.username }}" required>
+          <input type="email" name="email" class="form-control mb-2" value="{{ current_user.email }}" required>
+          <input type="file" name="avatar" class="form-control mb-2">
+          <button type="submit" class="btn btn-success w-100">Save Changes</button>
+        </form>
+      </div>
+    </div>
+    <div class="alert alert-info text-center">
+      <strong>Eco Tip:</strong> Keep your profile up to date and add a friendly avatar!
+    </div>
+  </div>
+</div>
+{% endblock %}

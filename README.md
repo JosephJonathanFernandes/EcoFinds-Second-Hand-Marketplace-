@@ -1,117 +1,96 @@
-📄 README.md
 # EcoFinds – Sustainable Second-Hand Marketplace
 
-EcoFinds is a hackathon project that promotes **sustainable consumption** by making it easy to **buy and sell second-hand items**.  
-It’s a simple web app built with **Flask + SQLite** that allows users to register, create product listings, browse items, add to cart, and track previous purchases.
+EcoFinds is a web application designed to promote sustainable consumption by enabling users to buy and sell second-hand items. Built with Flask and SQLite, EcoFinds provides a secure, user-friendly platform for listing products, managing purchases, and tracking activity.
 
 ---
 
-## 🚀 Features
-
-- 🔑 **User Authentication** (Register/Login/Logout)
-- 👤 **User Dashboard** – view your listings
-- 📦 **Product Listings (CRUD)** – Add, view, edit, delete products
-- 🔎 **Browse Products** – Feed view with title, price, and placeholder image
-- 🛒 **Cart** – Add products to cart and purchase them
-- 📜 **Previous Purchases** – Track past purchases
+## Features
+- **User Authentication:** Register, login, and logout securely
+- **User Dashboard:** View and manage your product listings
+- **Product Listings:** Add, view, edit, and delete products
+- **Product Feed:** Browse all available items with search and category filters
+- **Cart:** Add products to cart and purchase them
+- **Purchase History:** Track previous purchases
+- **Profile Management:** Update username, email, and avatar
 
 ---
 
-## 🛠️ Tech Stack
-
+## Tech Stack
 - **Backend:** Flask (Python)
-- **Database:** SQLite (via SQLAlchemy)
-- **Auth:** Flask-Login
-- **Frontend:** Bootstrap (CDN for fast styling)
+- **Database:** SQLite (SQLAlchemy ORM)
+- **Authentication:** Flask-Login
+- **Forms:** Flask-WTF
+- **Frontend:** Bootstrap (CDN)
 
 ---
 
-## 📂 Project Structure
+## Setup Instructions
+1. **Clone the repository:**
+   ```sh
+   git clone <your-repo-url>
+   cd ecofinds
+   ```
+2. **Create and activate a virtual environment:**
+   ```sh
+   python -m venv .venv
+   .venv\Scripts\activate  # Windows
+   source .venv/bin/activate  # macOS/Linux
+   ```
+3. **Install dependencies:**
+   ```sh
+   pip install -r requirements.txt
+   ```
+4. **Run the application:**
+   ```sh
+   python app.py
+   ```
 
+---
+
+## Usage
+- Access the app at `http://localhost:5000`
+- Register a new account or log in
+- Add products, browse listings, manage your cart, and view purchase history
+
+---
+
+## API Endpoints
+| Route                | Methods        | Description                       |
+|----------------------|---------------|-----------------------------------|
+| `/`                  | GET, POST     | Product feed/search               |
+| `/register`          | GET, POST     | User registration                 |
+| `/login`             | GET, POST     | User login                        |
+| `/logout`            | GET           | User logout                       |
+| `/dashboard`         | GET           | User dashboard                    |
+| `/add_product`       | GET, POST     | Add new product                   |
+| `/products`          | GET           | Browse all products               |
+| `/cart`              | GET           | View cart                         |
+| `/add_to_cart/<pid>` | GET           | Add product to cart               |
+| `/purchase`          | GET           | Purchase items in cart            |
+| `/purchases`         | GET           | View purchase history             |
+| `/profile`           | GET, POST     | View/update user profile          |
+| `/landing`           | GET           | Landing page                      |
+
+---
+
+## Project Structure
 ```
-ecofinds/
-├── app.py              # Main Flask app
-├── ecofinds.db         # SQLite database
-├── requirements.txt    # Python dependencies
-├── .gitignore          # Ignore unnecessary files
-├── templates/          # HTML templates (Bootstrap)
-│   ├── base.html
-│   ├── login.html
-│   ├── register.html
-│   ├── products.html
-│   ├── add_product.html
-│   ├── dashboard.html
-│   ├── cart.html
-│   └── purchases.html
+app.py            # Main Flask app
+models.py         # Database models
+forms.py          # WTForms definitions
+migrate_db.py     # DB migration script
+requirements.txt  # Python dependencies
+.gitignore        # Ignore unnecessary files
+instance/
+    ecofinds.db   # SQLite database
+static/
+    style.css     # Custom styles
+    avatars/      # Uploaded avatars
+templates/
+    *.html        # Jinja2 templates
 ```
 
 ---
 
-## ⚙️ Installation & Setup
-
-### 1. Clone the repository
-
-```bash
-git clone https://github.com/your-username/ecofinds.git
-cd ecofinds
-```
-
-### 2. Create & activate virtual environment
-
-For Linux / macOS:
-```bash
-python -m venv venv
-source venv/bin/activate
-```
-
-For Windows:
-```bash
-python -m venv venv
-venv\Scripts\activate
-```
-
-### 3. Install dependencies
-
-```bash
-pip install -r requirements.txt
-```
-
-### 4. Run the app
-
-```bash
-python app.py
-```
-
-Open [http://127.0.0.1:5000](http://127.0.0.1:5000) in your browser 🎉
-
----
-
-## 📝 Usage
-
-- Register/Login as a new user
-- Add a product with title, category, description, price
-- Browse products from the main feed
-- Add to cart and purchase items
-- View past purchases anytime
-
----
-
-## 💡 Future Enhancements
-
-- Image upload support (instead of placeholder URLs)
-- Search + category filters
-- Payment gateway integration
-- Chat between buyers & sellers
-- Mobile-friendly Progressive Web App (PWA)
-
----
-
-## 🤝 Contributing
-
-Pull requests are welcome! For major changes, please open an issue first to discuss what you would like to change.
-
----
-
-## 📄 License
-
-This project is licensed under the MIT License.
+## License
+This project is provided for educational and demonstration purposes.

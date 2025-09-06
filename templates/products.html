@@ -23,15 +23,18 @@
 
 <div class="row">
   {% for p in products %}
-  <div class="col-md-4">
-    <div class="card mb-3">
-      <img src="{{ p.image }}" class="card-img-top" alt="Product">
-      <div class="card-body">
-        <h5 class="card-title">{{ p.title }}</h5>
-        <p class="card-text">${{ p.price }} | <span class="badge bg-info">{{ p.category }}</span></p>
-        {% if current_user.is_authenticated %}
-          <a href="{{ url_for('add_to_cart', pid=p.id) }}" class="btn btn-warning">Add to Cart</a>
-        {% endif %}
+  <div class="col-md-4 d-flex align-items-stretch">
+    <div class="card mb-4 border-0 shadow-sm">
+      <img src="{{ p.image }}" class="card-img-top" alt="Product" style="height:220px;object-fit:cover;border-radius:16px 16px 0 0;">
+      <div class="card-body d-flex flex-column">
+        <h5 class="card-title fw-bold text-success"><i class="bi bi-box-seam me-1"></i> {{ p.title }}</h5>
+        <p class="card-text mb-2"><i class="bi bi-currency-dollar"></i> {{ p.price }} <span class="badge bg-success ms-2"><i class="bi bi-leaf me-1"></i>{{ p.category }}</span></p>
+        <p class="card-text text-muted" style="min-height:40px;">{{ p.description }}</p>
+        <div class="mt-auto">
+          {% if current_user.is_authenticated %}
+            <a href="{{ url_for('add_to_cart', pid=p.id) }}" class="btn btn-warning w-100"><i class="bi bi-cart-plus me-1"></i> Add to Cart</a>
+          {% endif %}
+        </div>
       </div>
     </div>
   </div>

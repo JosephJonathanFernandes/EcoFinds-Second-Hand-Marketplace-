@@ -1,7 +1,11 @@
+
+
+# ---------------- Routes ----------------
 from flask import Flask, render_template, redirect, url_for, request, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, login_user, logout_user, login_required, UserMixin, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.utils import secure_filename
 import os
 
 app = Flask(__name__)
@@ -17,6 +21,7 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(150), unique=True, nullable=False)
     username = db.Column(db.String(150))
     password = db.Column(db.String(150))
+    avatar = db.Column(db.String(250), default=None)
     products = db.relationship('Product', backref='owner', lazy=True)
     purchases = db.relationship('Purchase', backref='buyer', lazy=True)
 
@@ -38,6 +43,7 @@ class Purchase(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     product_id = db.Column(db.Integer, db.ForeignKey('product.id'))
+
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -151,7 +157,44 @@ def purchases():
     products = [Product.query.get(i.product_id) for i in items]
     return render_template('purchases.html', products=products)
 
+
+
+@app.route('/products')
+def products():
+    all_products = Product.query.all()
+    return render_template('products.html', products=all_products)
+
+# Landing page route
+@app.route('/landing')
+def landing():
+    featured_products = Product.query.limit(4).all()
+    return render_template('landing.html', featured_products=featured_products)
+
+
+@app.route('/profile', methods=['GET', 'POST'])
+@login_required
+def profile():
+    if request.method == 'POST':
+        username = request.form.get('username')
+        email = request.form.get('email')
+        avatar_file = request.files.get('avatar')
+        if username:
+            current_user.username = username
+        if email:
+            current_user.email = email
+        if avatar_file and avatar_file.filename:
+            filename = secure_filename(avatar_file.filename)
+            avatar_path = os.path.join('static', 'avatars', f"{current_user.id}_{filename}")
+            os.makedirs(os.path.dirname(avatar_path), exist_ok=True)
+            avatar_file.save(avatar_path)
+            current_user.avatar = '/' + avatar_path.replace('\\', '/')
+        db.session.commit()
+        flash('Profile updated!')
+        return redirect(url_for('profile'))
+    return render_template('profile.html')
+
 if __name__ == "__main__":
     if not os.path.exists("ecofinds.db"):
-        db.create_all()
+        with app.app_context():
+            db.create_all()
     app.run(debug=True)

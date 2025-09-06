@@ -1,20 +1,20 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>Register</h2>
-<form method="POST">
+<h2 class="mb-4 text-success fw-bold">🌱 Register</h2>
+<form method="POST" class="p-4 rounded shadow-sm bg-white" style="max-width:400px;margin:auto;">
   <div class="mb-3">
-    <label>Email</label>
+    <label class="form-label">Email</label>
     <input type="email" name="email" class="form-control" required>
   </div>
   <div class="mb-3">
-    <label>Username</label>
+    <label class="form-label">Username</label>
     <input type="text" name="username" class="form-control" required>
   </div>
   <div class="mb-3">
-    <label>Password</label>
+    <label class="form-label">Password</label>
     <input type="password" name="password" class="form-control" required>
   </div>
-  <button type="submit" class="btn btn-success">Register</button>
-  <a href="{{ url_for('login') }}" class="btn btn-link">Login</a>
+  <button type="submit" class="btn btn-success w-100 mb-2">Register</button>
+  <a href="{{ url_for('login') }}" class="btn btn-link w-100">Already have an account? Login</a>
 </form>
 {% endblock %}

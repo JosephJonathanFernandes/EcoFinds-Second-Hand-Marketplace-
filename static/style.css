@@ -1,0 +1,49 @@
+/* Navbar link styles */
+.navbar-nav .nav-link {
+  background: #43ea7c;
+  color: #fff !important;
+  font-weight: 500;
+  border-radius: 20px;
+  padding: 6px 16px;
+  margin: 0 4px;
+  transition: background 0.2s, color 0.2s;
+}
+.navbar-nav .nav-link:hover, .navbar-nav .nav-link.active {
+  background: #2dbd6e;
+  color: #fff !important;
+}
+/* Custom EcoFinds Styles */
+body {
+  background: #f6fff6;
+  font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+/* Card styles */
+  font-size: 1.5rem;
+}
+.btn-primary, .btn-success, .btn-warning {
+  border-radius: 20px;
+  font-weight: 500;
+}
+.card {
+  box-shadow: 0 2px 8px rgba(67, 234, 124, 0.1);
+  border-radius: 16px;
+  transition: box-shadow 0.2s;
+}
+.card:hover {
+  box-shadow: 0 4px 16px rgba(67, 234, 124, 0.2);
+}
+footer {
+  background: #2dbd6e;
+  color: #fff;
+  padding: 24px 0 12px 0;
+  text-align: center;
+  margin-top: 48px;
+  border-radius: 16px 16px 0 0;
+}
+input, textarea, select {
+  border-radius: 10px !important;
+}
+.alert-info {
+  background: #e6ffe6;
+  color: #2dbd6e;
+  border: 1px solid #43ea7c;
+}
