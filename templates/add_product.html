@@ -1,23 +1,344 @@
 {% extends "base.html" %}
+{% block title %}List New Item - EcoFinds{% endblock %}
+
 {% block content %}
-<h2 class="mb-4 text-success fw-bold">➕ Add New Product</h2>
-<form method="POST" class="p-4 rounded shadow-sm bg-white" style="max-width:500px;margin:auto;">
-  <div class="mb-3">
-    <label class="form-label">Product Title</label>
-    <input type="text" name="title" class="form-control" required>
+<!-- Page Header -->
+<div class="container-fluid bg-light py-4">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-8">
+        <h1 class="display-6 fw-bold text-success mb-2">
+          <i class="bi bi-plus-circle me-3"></i>List New Item
+        </h1>
+        <p class="lead text-muted mb-0">Share your pre-loved items with our eco-conscious community</p>
+      </div>
+      <div class="col-lg-4 text-lg-end">
+        <a href="{{ url_for('dashboard') }}" class="btn btn-outline-success">
+          <i class="bi bi-arrow-left me-2"></i>Back to Dashboard
+        </a>
+      </div>
+    </div>
   </div>
-  <div class="mb-3">
-    <label class="form-label">Category</label>
-    <input type="text" name="category" class="form-control" required>
+</div>
+
+<!-- Form Section -->
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="card border-0 shadow-lg">
+        <div class="card-header bg-success text-white">
+          <h4 class="fw-bold mb-0">
+            <i class="bi bi-upload me-2"></i>Item Details
+          </h4>
+        </div>
+        <div class="card-body p-4">
+          <form method="POST" id="productForm" enctype="multipart/form-data">
+            <!-- Product Title -->
+            <div class="mb-4">
+              <label class="form-label fw-semibold">
+                <i class="bi bi-tag me-1"></i>Product Title *
+              </label>
+              <input type="text" name="title" class="form-control form-control-lg" 
+                     placeholder="Enter a descriptive title for your item" required>
+              <div class="form-text">Make it catchy and descriptive to attract buyers</div>
+            </div>
+
+            <!-- Category Selection -->
+            <div class="mb-4">
+              <label class="form-label fw-semibold">
+                <i class="bi bi-grid me-1"></i>Category *
+              </label>
+              <select name="category" class="form-select form-select-lg" required>
+                <option value="">Choose a category</option>
+                <option value="Electronics">Electronics</option>
+                <option value="Clothing">Clothing & Accessories</option>
+                <option value="Home & Garden">Home & Garden</option>
+                <option value="Books">Books & Media</option>
+                <option value="Sports">Sports & Fitness</option>
+                <option value="Toys">Toys & Games</option>
+                <option value="Furniture">Furniture</option>
+                <option value="Beauty">Beauty & Health</option>
+                <option value="Automotive">Automotive</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+
+            <!-- Price -->
+            <div class="mb-4">
+              <label class="form-label fw-semibold">
+                <i class="bi bi-currency-dollar me-1"></i>Price *
+              </label>
+              <div class="input-group input-group-lg">
+                <span class="input-group-text">$</span>
+                <input type="number" step="0.01" name="price" class="form-control" 
+                       placeholder="0.00" min="0" required>
+              </div>
+              <div class="form-text">Set a fair price based on condition and market value</div>
+            </div>
+
+            <!-- Description -->
+            <div class="mb-4">
+              <label class="form-label fw-semibold">
+                <i class="bi bi-file-text me-1"></i>Description *
+              </label>
+              <textarea name="description" class="form-control" rows="4" 
+                        placeholder="Describe your item's condition, features, and why someone would love it..." required></textarea>
+              <div class="form-text">
+                <span id="charCount">0</span>/500 characters. Include condition, size, brand, and any special features.
+              </div>
+            </div>
+
+            <!-- Image Upload -->
+            <div class="mb-4">
+              <label class="form-label fw-semibold">
+                <i class="bi bi-image me-1"></i>Product Image
+              </label>
+              <div class="upload-area border-2 border-dashed rounded p-4 text-center" id="uploadArea">
+                <i class="bi bi-cloud-upload text-muted" style="font-size: 3rem;"></i>
+                <h5 class="text-muted mt-2">Upload Product Image</h5>
+                <p class="text-muted mb-3">Drag & drop or click to browse</p>
+                <input type="file" name="image" class="form-control" accept="image/*" id="imageInput">
+                <div class="form-text">Recommended: High-quality images help sell faster</div>
+              </div>
+              <div id="imagePreview" class="mt-3" style="display: none;">
+                <img id="previewImg" class="img-fluid rounded" style="max-height: 200px;">
+              </div>
+            </div>
+
+            <!-- Condition -->
+            <div class="mb-4">
+              <label class="form-label fw-semibold">
+                <i class="bi bi-check-circle me-1"></i>Item Condition *
+              </label>
+              <div class="row g-3">
+                <div class="col-md-4">
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" name="condition" value="excellent" id="excellent">
+                    <label class="form-check-label" for="excellent">
+                      <i class="bi bi-star-fill text-warning me-1"></i>Excellent
+                    </label>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" name="condition" value="good" id="good">
+                    <label class="form-check-label" for="good">
+                      <i class="bi bi-star-fill text-warning me-1"></i>Good
+                    </label>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" name="condition" value="fair" id="fair">
+                    <label class="form-check-label" for="fair">
+                      <i class="bi bi-star-fill text-warning me-1"></i>Fair
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Eco Impact -->
+            <div class="alert alert-info border-0 mb-4">
+              <div class="d-flex align-items-start">
+                <i class="bi bi-leaf text-success me-3" style="font-size: 1.5rem;"></i>
+                <div>
+                  <h6 class="fw-bold mb-2">🌱 Eco Impact</h6>
+                  <p class="mb-0">By listing this item, you're helping reduce waste and promoting sustainable consumption. Thank you for making a difference!</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Submit Buttons -->
+            <div class="d-flex gap-3">
+              <button type="submit" class="btn btn-success btn-lg flex-fill">
+                <i class="bi bi-check-circle me-2"></i>List Item
+              </button>
+              <button type="button" class="btn btn-outline-secondary btn-lg" onclick="history.back()">
+                <i class="bi bi-x-circle me-2"></i>Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Tips Section -->
+      <div class="card border-0 shadow-sm mt-4">
+        <div class="card-header bg-light">
+          <h5 class="fw-bold mb-0">
+            <i class="bi bi-lightbulb me-2"></i>Selling Tips
+          </h5>
+        </div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <div class="d-flex">
+                <i class="bi bi-camera text-success me-3 mt-1"></i>
+                <div>
+                  <h6 class="fw-semibold">Great Photos</h6>
+                  <p class="text-muted small mb-0">Use good lighting and show all angles</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="d-flex">
+                <i class="bi bi-pencil text-success me-3 mt-1"></i>
+                <div>
+                  <h6 class="fw-semibold">Honest Descriptions</h6>
+                  <p class="text-muted small mb-0">Be transparent about condition and flaws</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="d-flex">
+                <i class="bi bi-currency-dollar text-success me-3 mt-1"></i>
+                <div>
+                  <h6 class="fw-semibold">Fair Pricing</h6>
+                  <p class="text-muted small mb-0">Research similar items for competitive pricing</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="d-flex">
+                <i class="bi bi-clock text-success me-3 mt-1"></i>
+                <div>
+                  <h6 class="fw-semibold">Quick Response</h6>
+                  <p class="text-muted small mb-0">Respond to messages promptly for better sales</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
-  <div class="mb-3">
-    <label class="form-label">Description</label>
-    <textarea name="description" class="form-control" required></textarea>
-  </div>
-  <div class="mb-3">
-    <label class="form-label">Price</label>
-    <input type="number" step="0.01" name="price" class="form-control" required>
-  </div>
-  <button type="submit" class="btn btn-primary w-100">Submit Listing</button>
-</form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<style>
+  .upload-area {
+    transition: var(--transition);
+    cursor: pointer;
+  }
+  .upload-area:hover {
+    border-color: var(--primary-green) !important;
+    background-color: rgba(0, 200, 81, 0.05);
+  }
+  .upload-area.dragover {
+    border-color: var(--primary-green) !important;
+    background-color: rgba(0, 200, 81, 0.1);
+  }
+</style>
+
+<script>
+  // Character counter for description
+  const descriptionTextarea = document.querySelector('textarea[name="description"]');
+  const charCount = document.getElementById('charCount');
+  
+  descriptionTextarea.addEventListener('input', function() {
+    const length = this.value.length;
+    charCount.textContent = length;
+    
+    if (length > 450) {
+      charCount.style.color = '#dc3545';
+    } else if (length > 400) {
+      charCount.style.color = '#ffc107';
+    } else {
+      charCount.style.color = '#6c757d';
+    }
+  });
+
+  // Image upload preview
+  const uploadArea = document.getElementById('uploadArea');
+  const imageInput = document.getElementById('imageInput');
+  const imagePreview = document.getElementById('imagePreview');
+  const previewImg = document.getElementById('previewImg');
+
+  // Click to upload
+  uploadArea.addEventListener('click', () => imageInput.click());
+
+  // Drag and drop
+  uploadArea.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    uploadArea.classList.add('dragover');
+  });
+
+  uploadArea.addEventListener('dragleave', () => {
+    uploadArea.classList.remove('dragover');
+  });
+
+  uploadArea.addEventListener('drop', (e) => {
+    e.preventDefault();
+    uploadArea.classList.remove('dragover');
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+      imageInput.files = files;
+      handleImagePreview(files[0]);
+    }
+  });
+
+  // File input change
+  imageInput.addEventListener('change', (e) => {
+    if (e.target.files.length > 0) {
+      handleImagePreview(e.target.files[0]);
+    }
+  });
+
+  function handleImagePreview(file) {
+    if (file && file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        previewImg.src = e.target.result;
+        imagePreview.style.display = 'block';
+        uploadArea.style.display = 'none';
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  // Form validation
+  document.getElementById('productForm').addEventListener('submit', function(e) {
+    const title = document.querySelector('input[name="title"]').value.trim();
+    const category = document.querySelector('select[name="category"]').value;
+    const price = document.querySelector('input[name="price"]').value;
+    const description = document.querySelector('textarea[name="description"]').value.trim();
+    const condition = document.querySelector('input[name="condition"]:checked');
+
+    if (!title || !category || !price || !description || !condition) {
+      e.preventDefault();
+      alert('Please fill in all required fields');
+      return;
+    }
+
+    if (parseFloat(price) <= 0) {
+      e.preventDefault();
+      alert('Please enter a valid price');
+      return;
+    }
+
+    if (description.length < 10) {
+      e.preventDefault();
+      alert('Description must be at least 10 characters long');
+      return;
+    }
+
+    // Show loading state
+    const submitBtn = this.querySelector('button[type="submit"]');
+    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Listing Item...';
+    submitBtn.disabled = true;
+  });
+
+  // Auto-save draft (placeholder)
+  let draftTimer;
+  document.querySelectorAll('input, textarea, select').forEach(field => {
+    field.addEventListener('input', function() {
+      clearTimeout(draftTimer);
+      draftTimer = setTimeout(() => {
+        // This would save to localStorage or send to server
+        console.log('Draft saved');
+      }, 2000);
+    });
+  });
+</script>
 {% endblock %}

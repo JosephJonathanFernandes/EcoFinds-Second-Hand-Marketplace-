@@ -1,23 +1,268 @@
 {% extends "base.html" %}
+{% block title %}Shopping Cart - EcoFinds{% endblock %}
+
 {% block content %}
-<h2 class="mb-4 text-success fw-bold">🛒 My Cart</h2>
-{% if products %}
-<div class="row">
-  {% for p in products %}
-  <div class="col-md-4 d-flex align-items-stretch">
-    <div class="card mb-4 border-0 shadow-sm">
-      <img src="{{ p.image }}" class="card-img-top" alt="Product" style="height:220px;object-fit:cover;border-radius:16px 16px 0 0;">
-      <div class="card-body d-flex flex-column">
-        <h5 class="card-title fw-bold text-success">{{ p.title }}</h5>
-        <p class="card-text mb-2">${{ p.price }}</p>
-        <p class="card-text text-muted" style="min-height:40px;">{{ p.description }}</p>
+<!-- Page Header -->
+<div class="container-fluid bg-light py-4">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-8">
+        <h1 class="display-6 fw-bold text-success mb-2">
+          <i class="bi bi-cart me-3"></i>Shopping Cart
+        </h1>
+        <p class="lead text-muted mb-0">Review your sustainable finds before checkout</p>
+      </div>
+      <div class="col-lg-4 text-lg-end">
+        <a href="{{ url_for('index') }}" class="btn btn-outline-success">
+          <i class="bi bi-arrow-left me-2"></i>Continue Shopping
+        </a>
       </div>
     </div>
   </div>
-  {% endfor %}
 </div>
-<a href="{{ url_for('purchase') }}" class="btn btn-success shadow-sm">Purchase All</a>
-{% else %}
-<p class="text-muted">Your cart is empty.</p>
-{% endif %}
+
+<!-- Cart Content -->
+<div class="container py-5">
+  {% if products %}
+    <div class="row">
+      <!-- Cart Items -->
+      <div class="col-lg-8">
+        <div class="card border-0 shadow-sm">
+          <div class="card-header bg-white border-0">
+            <div class="d-flex justify-content-between align-items-center">
+              <h5 class="fw-bold mb-0">
+                <i class="bi bi-bag me-2"></i>Cart Items ({{ products|length }})
+              </h5>
+              <button class="btn btn-outline-danger btn-sm" id="clearCart">
+                <i class="bi bi-trash me-1"></i>Clear Cart
+              </button>
+            </div>
+          </div>
+          <div class="card-body p-0">
+            {% for p in products %}
+            <div class="cart-item border-bottom p-4" data-product-id="{{ p.id }}">
+              <div class="row align-items-center">
+                <div class="col-md-2">
+                  <img src="{{ p.image }}" class="img-fluid rounded" alt="{{ p.title }}" 
+                       style="height: 100px; object-fit: cover;">
+                </div>
+                <div class="col-md-6">
+                  <h6 class="fw-bold text-success mb-1">{{ p.title }}</h6>
+                  <p class="text-muted small mb-2">{{ p.description[:100] }}{% if p.description|length > 100 %}...{% endif %}</p>
+                  <div class="d-flex align-items-center gap-3">
+                    <span class="badge bg-light text-dark">{{ p.category }}</span>
+                    <small class="text-muted">
+                      <i class="bi bi-person-circle me-1"></i>by {{ p.owner.username }}
+                    </small>
+                  </div>
+                </div>
+                <div class="col-md-2 text-center">
+                  <div class="quantity-controls d-flex align-items-center justify-content-center">
+                    <button class="btn btn-outline-secondary btn-sm" onclick="updateQuantity({{ p.id }}, -1)">
+                      <i class="bi bi-dash"></i>
+                    </button>
+                    <span class="mx-3 fw-bold" id="qty-{{ p.id }}">1</span>
+                    <button class="btn btn-outline-secondary btn-sm" onclick="updateQuantity({{ p.id }}, 1)">
+                      <i class="bi bi-plus"></i>
+                    </button>
+                  </div>
+                </div>
+                <div class="col-md-2 text-end">
+                  <div class="h5 fw-bold text-success mb-1" id="price-{{ p.id }}">${{ p.price }}</div>
+                  <button class="btn btn-outline-danger btn-sm" onclick="removeItem({{ p.id }})">
+                    <i class="bi bi-trash me-1"></i>Remove
+                  </button>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- Eco Impact -->
+        <div class="card border-0 shadow-sm mt-4">
+          <div class="card-body">
+            <div class="d-flex align-items-center">
+              <i class="bi bi-leaf text-success me-3" style="font-size: 2rem;"></i>
+              <div>
+                <h6 class="fw-bold mb-1">Your Eco Impact</h6>
+                <p class="text-muted mb-0">By choosing second-hand items, you're helping reduce waste and promote sustainability!</p>
+              </div>
+            </div>
+            <div class="row text-center mt-3">
+              <div class="col-4">
+                <div class="h5 fw-bold text-success mb-1">2.5kg</div>
+                <small class="text-muted">CO₂ Saved</small>
+              </div>
+              <div class="col-4">
+                <div class="h5 fw-bold text-success mb-1">{{ products|length }}</div>
+                <small class="text-muted">Items Recycled</small>
+              </div>
+              <div class="col-4">
+                <div class="h5 fw-bold text-success mb-1">100%</div>
+                <small class="text-muted">Eco-Friendly</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Order Summary -->
+      <div class="col-lg-4">
+        <div class="card border-0 shadow-sm sticky-top" style="top: 100px;">
+          <div class="card-header bg-success text-white">
+            <h5 class="fw-bold mb-0">
+              <i class="bi bi-receipt me-2"></i>Order Summary
+            </h5>
+          </div>
+          <div class="card-body">
+            <div class="d-flex justify-content-between mb-2">
+              <span>Subtotal ({{ products|length }} items)</span>
+              <span id="subtotal">${{ "%.2f"|format(products|sum(attribute='price')) }}</span>
+            </div>
+            <div class="d-flex justify-content-between mb-2">
+              <span>Eco Impact Fee</span>
+              <span class="text-success">FREE</span>
+            </div>
+            <div class="d-flex justify-content-between mb-2">
+              <span>Processing Fee</span>
+              <span>$2.99</span>
+            </div>
+            <hr>
+            <div class="d-flex justify-content-between mb-3">
+              <span class="fw-bold">Total</span>
+              <span class="fw-bold h5 text-success" id="total">${{ "%.2f"|format(products|sum(attribute='price') + 2.99) }}</span>
+            </div>
+            
+            <button class="btn btn-success btn-lg w-100 mb-3" onclick="proceedToCheckout()">
+              <i class="bi bi-credit-card me-2"></i>Proceed to Checkout
+            </button>
+            
+            <div class="text-center">
+              <small class="text-muted">
+                <i class="bi bi-shield-check me-1"></i>
+                Secure checkout powered by EcoFinds
+              </small>
+            </div>
+          </div>
+        </div>
+
+        <!-- Security Features -->
+        <div class="card border-0 shadow-sm mt-3">
+          <div class="card-body text-center">
+            <h6 class="fw-bold mb-3">Why Shop with EcoFinds?</h6>
+            <div class="row g-3">
+              <div class="col-6">
+                <i class="bi bi-shield-check text-success d-block mb-2" style="font-size: 1.5rem;"></i>
+                <small class="text-muted">Secure Payment</small>
+              </div>
+              <div class="col-6">
+                <i class="bi bi-truck text-success d-block mb-2" style="font-size: 1.5rem;"></i>
+                <small class="text-muted">Fast Delivery</small>
+              </div>
+              <div class="col-6">
+                <i class="bi bi-arrow-return-left text-success d-block mb-2" style="font-size: 1.5rem;"></i>
+                <small class="text-muted">Easy Returns</small>
+              </div>
+              <div class="col-6">
+                <i class="bi bi-headset text-success d-block mb-2" style="font-size: 1.5rem;"></i>
+                <small class="text-muted">24/7 Support</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% else %}
+    <!-- Empty Cart State -->
+    <div class="text-center py-5">
+      <div class="mb-4">
+        <i class="bi bi-cart-x text-muted" style="font-size: 4rem;"></i>
+      </div>
+      <h3 class="fw-bold text-muted mb-3">Your Cart is Empty</h3>
+      <p class="text-muted mb-4">Looks like you haven't added any sustainable finds to your cart yet!</p>
+      <div class="d-flex gap-3 justify-content-center">
+        <a href="{{ url_for('index') }}" class="btn btn-success btn-lg">
+          <i class="bi bi-search me-2"></i>Browse Products
+        </a>
+        <a href="{{ url_for('landing') }}" class="btn btn-outline-success btn-lg">
+          <i class="bi bi-house me-2"></i>Go Home
+        </a>
+      </div>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // Update quantity
+  function updateQuantity(productId, change) {
+    const qtyElement = document.getElementById(`qty-${productId}`);
+    const priceElement = document.getElementById(`price-${productId}`);
+    const currentQty = parseInt(qtyElement.textContent);
+    const newQty = Math.max(1, currentQty + change);
+    
+    qtyElement.textContent = newQty;
+    
+    // Update price (assuming original price is stored in data attribute)
+    const originalPrice = parseFloat(priceElement.textContent.replace('$', ''));
+    const newPrice = originalPrice * newQty;
+    priceElement.textContent = `$${newPrice.toFixed(2)}`;
+    
+    updateTotals();
+  }
+
+  // Remove item
+  function removeItem(productId) {
+    if (confirm('Are you sure you want to remove this item from your cart?')) {
+      const cartItem = document.querySelector(`[data-product-id="${productId}"]`);
+      cartItem.remove();
+      updateTotals();
+      
+      // Check if cart is empty
+      const remainingItems = document.querySelectorAll('.cart-item');
+      if (remainingItems.length === 0) {
+        location.reload();
+      }
+    }
+  }
+
+  // Update totals
+  function updateTotals() {
+    const items = document.querySelectorAll('.cart-item');
+    let subtotal = 0;
+    
+    items.forEach(item => {
+      const priceText = item.querySelector('[id^="price-"]').textContent;
+      const price = parseFloat(priceText.replace('$', ''));
+      subtotal += price;
+    });
+    
+    const processingFee = 2.99;
+    const total = subtotal + processingFee;
+    
+    document.getElementById('subtotal').textContent = `$${subtotal.toFixed(2)}`;
+    document.getElementById('total').textContent = `$${total.toFixed(2)}`;
+  }
+
+  // Proceed to checkout
+  function proceedToCheckout() {
+    // This would redirect to actual checkout
+    window.location.href = "{{ url_for('purchase') }}";
+  }
+
+  // Clear cart
+  document.getElementById('clearCart').addEventListener('click', function() {
+    if (confirm('Are you sure you want to clear your entire cart?')) {
+      // This would clear the cart via AJAX
+      location.reload();
+    }
+  });
+
+  // Initialize totals on page load
+  document.addEventListener('DOMContentLoaded', function() {
+    updateTotals();
+  });
+</script>
 {% endblock %}

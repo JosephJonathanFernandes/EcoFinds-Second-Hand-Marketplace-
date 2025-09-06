@@ -1,49 +1,332 @@
-/* Navbar link styles */
-.navbar-nav .nav-link {
-  background: #43ea7c;
-  color: #fff !important;
-  font-weight: 500;
-  border-radius: 20px;
-  padding: 6px 16px;
-  margin: 0 4px;
-  transition: background 0.2s, color 0.2s;
+/* ===== MODERN ECOFINDS STYLES ===== */
+
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+/* CSS Variables for consistent theming */
+:root {
+  --primary-green: #00C851;
+  --secondary-green: #00A041;
+  --accent-green: #43ea7c;
+  --light-green: #E8F5E8;
+  --dark-green: #006400;
+  --gradient-primary: linear-gradient(135deg, #00C851 0%, #00A041 100%);
+  --gradient-secondary: linear-gradient(135deg, #43ea7c 0%, #00C851 100%);
+  --gradient-hero: linear-gradient(135deg, #E8F5E8 0%, #F0F8F0 100%);
+  --shadow-soft: 0 4px 20px rgba(0, 200, 81, 0.1);
+  --shadow-hover: 0 8px 30px rgba(0, 200, 81, 0.2);
+  --border-radius: 12px;
+  --border-radius-lg: 20px;
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
-.navbar-nav .nav-link:hover, .navbar-nav .nav-link.active {
-  background: #2dbd6e;
-  color: #fff !important;
+
+/* Global Styles */
+* {
+  box-sizing: border-box;
 }
-/* Custom EcoFinds Styles */
+
 body {
-  background: #f6fff6;
-  font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
-/* Card styles */
-  font-size: 1.5rem;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--gradient-hero);
+  color: #2c3e50;
+  line-height: 1.6;
+  font-size: 16px;
+  overflow-x: hidden;
 }
-.btn-primary, .btn-success, .btn-warning {
-  border-radius: 20px;
+
+/* Enhanced Navbar */
+.navbar {
+  background: rgba(255, 255, 255, 0.95) !important;
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(0, 200, 81, 0.1);
+  box-shadow: 0 2px 20px rgba(0, 200, 81, 0.1);
+  transition: var(--transition);
+}
+
+.navbar-brand {
+  font-weight: 800;
+  font-size: 1.5rem;
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  transition: var(--transition);
+}
+
+.navbar-brand:hover {
+  transform: scale(1.05);
+}
+
+.navbar-nav .nav-link {
+  background: var(--gradient-secondary);
+  color: white !important;
+  font-weight: 500;
+  border-radius: var(--border-radius-lg);
+  padding: 8px 20px;
+  margin: 0 6px;
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+
+.navbar-nav .nav-link::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.5s;
+}
+
+.navbar-nav .nav-link:hover::before {
+  left: 100%;
+}
+
+.navbar-nav .nav-link:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-soft);
+}
+
+/* Enhanced Buttons */
+.btn {
+  border-radius: var(--border-radius);
+  font-weight: 600;
+  padding: 12px 24px;
+  transition: var(--transition);
+  border: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-primary {
+  background: var(--gradient-primary);
+  color: white;
+  box-shadow: var(--shadow-soft);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+  background: var(--gradient-primary);
+}
+
+.btn-success {
+  background: var(--gradient-secondary);
+  color: white;
+  box-shadow: var(--shadow-soft);
+}
+
+.btn-success:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+  background: var(--gradient-secondary);
+}
+
+.btn-warning {
+  background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+  color: white;
+  box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+}
+
+.btn-warning:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(255, 215, 0, 0.4);
+  background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+}
+
+/* Enhanced Cards */
+.card {
+  border: none;
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-soft);
+  transition: var(--transition);
+  background: white;
+  overflow: hidden;
+  position: relative;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--gradient-primary);
+  opacity: 0;
+  transition: var(--transition);
+}
+
+.card:hover::before {
+  opacity: 1;
+}
+
+.card:hover {
+  transform: translateY(-8px);
+  box-shadow: var(--shadow-hover);
+}
+
+.card-img-top {
+  transition: var(--transition);
+}
+
+.card:hover .card-img-top {
+  transform: scale(1.05);
+}
+
+/* Enhanced Forms */
+.form-control, .form-select {
+  border: 2px solid #e9ecef;
+  border-radius: var(--border-radius);
+  padding: 12px 16px;
+  transition: var(--transition);
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.form-control:focus, .form-select:focus {
+  border-color: var(--primary-green);
+  box-shadow: 0 0 0 0.2rem rgba(0, 200, 81, 0.25);
+  background: white;
+}
+
+/* Enhanced Alerts */
+.alert {
+  border: none;
+  border-radius: var(--border-radius);
+  padding: 16px 20px;
   font-weight: 500;
 }
-.card {
-  box-shadow: 0 2px 8px rgba(67, 234, 124, 0.1);
-  border-radius: 16px;
-  transition: box-shadow 0.2s;
-}
-.card:hover {
-  box-shadow: 0 4px 16px rgba(67, 234, 124, 0.2);
-}
-footer {
-  background: #2dbd6e;
-  color: #fff;
-  padding: 24px 0 12px 0;
-  text-align: center;
-  margin-top: 48px;
-  border-radius: 16px 16px 0 0;
-}
-input, textarea, select {
-  border-radius: 10px !important;
-}
+
 .alert-info {
-  background: #e6ffe6;
-  color: #2dbd6e;
-  border: 1px solid #43ea7c;
+  background: linear-gradient(135deg, #E8F5E8 0%, #F0F8F0 100%);
+  color: var(--dark-green);
+  border-left: 4px solid var(--primary-green);
+}
+
+/* Enhanced Footer */
+footer {
+  background: var(--gradient-primary);
+  color: white;
+  padding: 40px 0 20px 0;
+  margin-top: 80px;
+  border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
+  position: relative;
+  overflow: hidden;
+}
+
+footer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="1" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+  opacity: 0.1;
+}
+
+/* Hero Section Enhancements */
+.hero-section {
+  background: var(--gradient-hero);
+  padding: 80px 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="dots" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="1" fill="%2300C851" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23dots)"/></svg>');
+}
+
+/* Product Grid Enhancements */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+  margin: 40px 0;
+}
+
+/* Loading States */
+.loading {
+  position: relative;
+  overflow: hidden;
+}
+
+.loading::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .navbar-nav .nav-link {
+    margin: 4px 0;
+    text-align: center;
+  }
+  
+  .card {
+    margin-bottom: 20px;
+  }
+  
+  .hero-section {
+    padding: 40px 0;
+  }
+}
+
+/* Accessibility Improvements */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Focus States */
+.btn:focus,
+.form-control:focus,
+.form-select:focus {
+  outline: 2px solid var(--primary-green);
+  outline-offset: 2px;
+}
+
+/* Animation Classes */
+.fade-in {
+  animation: fadeIn 0.6s ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.slide-up {
+  animation: slideUp 0.8s ease-out;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(40px); }
+  to { opacity: 1; transform: translateY(0); }
 }

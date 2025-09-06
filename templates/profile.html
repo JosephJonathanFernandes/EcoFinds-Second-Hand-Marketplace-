@@ -1,27 +1,300 @@
 {% extends "base.html" %}
+{% block title %}My Profile - EcoFinds{% endblock %}
+
 {% block content %}
-<div class="row justify-content-center">
-  <div class="col-md-6">
-    <div class="card p-4 shadow-sm mb-4">
-      <div class="text-center">
-        <img src="{{ current_user.avatar or 'https://cdn-icons-png.flaticon.com/512/149/149071.png' }}" class="rounded-circle mb-3" alt="Avatar" style="width:120px;height:120px;object-fit:cover;border:4px solid #43ea7c;background:#e6ffe6;">
-        <h3 class="fw-bold text-success">{{ current_user.username }}</h3>
-        <p class="text-muted">{{ current_user.email }}</p>
+<!-- Profile Header -->
+<div class="container-fluid bg-light py-4">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-8">
+        <h1 class="display-6 fw-bold text-success mb-2">
+          <i class="bi bi-person-circle me-3"></i>My Profile
+        </h1>
+        <p class="lead text-muted mb-0">Manage your account settings and preferences</p>
       </div>
-      <hr>
-      <div class="mb-3">
-        <label class="form-label">Edit Profile</label>
-        <form method="POST" enctype="multipart/form-data">
-          <input type="text" name="username" class="form-control mb-2" value="{{ current_user.username }}" required>
-          <input type="email" name="email" class="form-control mb-2" value="{{ current_user.email }}" required>
-          <input type="file" name="avatar" class="form-control mb-2">
-          <button type="submit" class="btn btn-success w-100">Save Changes</button>
-        </form>
+      <div class="col-lg-4 text-lg-end">
+        <a href="{{ url_for('dashboard') }}" class="btn btn-outline-success">
+          <i class="bi bi-arrow-left me-2"></i>Back to Dashboard
+        </a>
       </div>
-    </div>
-    <div class="alert alert-info text-center">
-      <strong>Eco Tip:</strong> Keep your profile up to date and add a friendly avatar!
     </div>
   </div>
 </div>
+
+<!-- Profile Content -->
+<div class="container py-5">
+  <div class="row">
+    <!-- Profile Card -->
+    <div class="col-lg-4 mb-4">
+      <div class="card border-0 shadow-sm sticky-top" style="top: 100px;">
+        <div class="card-body text-center p-4">
+          <div class="position-relative d-inline-block mb-3">
+            <img src="{{ current_user.avatar or 'https://cdn-icons-png.flaticon.com/512/149/149071.png' }}" 
+                 class="rounded-circle" alt="Avatar" 
+                 style="width: 120px; height: 120px; object-fit: cover; border: 4px solid var(--primary-green);">
+            <button class="btn btn-success btn-sm rounded-circle position-absolute bottom-0 end-0" 
+                    onclick="document.getElementById('avatarInput').click()" 
+                    style="width: 35px; height: 35px;">
+              <i class="bi bi-camera"></i>
+            </button>
+          </div>
+          <h4 class="fw-bold text-success mb-1">{{ current_user.username }}</h4>
+          <p class="text-muted mb-3">{{ current_user.email }}</p>
+          
+          <!-- Member Since -->
+          <div class="d-flex align-items-center justify-content-center mb-3">
+            <i class="bi bi-calendar-check text-success me-2"></i>
+            <span class="text-muted">Member since 2025</span>
+          </div>
+
+          <!-- Eco Stats -->
+          <div class="row text-center">
+            <div class="col-4">
+              <div class="h5 fw-bold text-success mb-1">12</div>
+              <small class="text-muted">Items Sold</small>
+            </div>
+            <div class="col-4">
+              <div class="h5 fw-bold text-success mb-1">8</div>
+              <small class="text-muted">Items Bought</small>
+            </div>
+            <div class="col-4">
+              <div class="h5 fw-bold text-success mb-1">4.9</div>
+              <small class="text-muted">Rating</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Profile Settings -->
+    <div class="col-lg-8">
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-success text-white">
+          <h5 class="fw-bold mb-0">
+            <i class="bi bi-gear me-2"></i>Account Settings
+          </h5>
+        </div>
+        <div class="card-body p-4">
+          <form method="POST" enctype="multipart/form-data" id="profileForm">
+            <!-- Hidden file input for avatar -->
+            <input type="file" name="avatar" id="avatarInput" class="d-none" accept="image/*" onchange="previewAvatar(this)">
+            
+            <div class="row">
+              <div class="col-md-6 mb-4">
+                <label class="form-label fw-semibold">
+                  <i class="bi bi-person me-1"></i>Username
+                </label>
+                <input type="text" name="username" class="form-control form-control-lg" 
+                       value="{{ current_user.username }}" required>
+                <div class="form-text">This will be visible to other users</div>
+              </div>
+              
+              <div class="col-md-6 mb-4">
+                <label class="form-label fw-semibold">
+                  <i class="bi bi-envelope me-1"></i>Email Address
+                </label>
+                <input type="email" name="email" class="form-control form-control-lg" 
+                       value="{{ current_user.email }}" required>
+                <div class="form-text">We'll use this to contact you</div>
+              </div>
+            </div>
+
+            <!-- Bio Section -->
+            <div class="mb-4">
+              <label class="form-label fw-semibold">
+                <i class="bi bi-file-text me-1"></i>Bio
+              </label>
+              <textarea name="bio" class="form-control" rows="3" 
+                        placeholder="Tell us about yourself and your eco-friendly journey..."></textarea>
+              <div class="form-text">Optional: Share your sustainability story</div>
+            </div>
+
+            <!-- Location -->
+            <div class="row">
+              <div class="col-md-6 mb-4">
+                <label class="form-label fw-semibold">
+                  <i class="bi bi-geo-alt me-1"></i>City
+                </label>
+                <input type="text" name="city" class="form-control form-control-lg" 
+                       placeholder="Your city">
+              </div>
+              
+              <div class="col-md-6 mb-4">
+                <label class="form-label fw-semibold">
+                  <i class="bi bi-globe me-1"></i>Country
+                </label>
+                <select name="country" class="form-select form-select-lg">
+                  <option value="">Select Country</option>
+                  <option value="US">United States</option>
+                  <option value="CA">Canada</option>
+                  <option value="UK">United Kingdom</option>
+                  <option value="AU">Australia</option>
+                  <option value="DE">Germany</option>
+                  <option value="FR">France</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Preferences -->
+            <div class="mb-4">
+              <label class="form-label fw-semibold">
+                <i class="bi bi-bell me-1"></i>Notification Preferences
+              </label>
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="emailNotifications" checked>
+                    <label class="form-check-label" for="emailNotifications">
+                      Email notifications
+                    </label>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="ecoTips" checked>
+                    <label class="form-check-label" for="ecoTips">
+                      Eco-friendly tips
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="d-flex gap-3">
+              <button type="submit" class="btn btn-success btn-lg">
+                <i class="bi bi-check-circle me-2"></i>Save Changes
+              </button>
+              <button type="button" class="btn btn-outline-secondary btn-lg" onclick="resetForm()">
+                <i class="bi bi-arrow-clockwise me-2"></i>Reset
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Eco Impact Card -->
+      <div class="card border-0 shadow-sm mt-4">
+        <div class="card-header bg-light">
+          <h5 class="fw-bold mb-0">
+            <i class="bi bi-leaf me-2"></i>Your Eco Impact
+          </h5>
+        </div>
+        <div class="card-body">
+          <div class="row text-center">
+            <div class="col-md-3">
+              <div class="h3 fw-bold text-success mb-1">2.5kg</div>
+              <small class="text-muted">CO₂ Saved</small>
+            </div>
+            <div class="col-md-3">
+              <div class="h3 fw-bold text-success mb-1">15</div>
+              <small class="text-muted">Items Recycled</small>
+            </div>
+            <div class="col-md-3">
+              <div class="h3 fw-bold text-success mb-1">$340</div>
+              <small class="text-muted">Money Saved</small>
+            </div>
+            <div class="col-md-3">
+              <div class="h3 fw-bold text-success mb-1">100%</div>
+              <small class="text-muted">Eco-Friendly</small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Security Settings -->
+      <div class="card border-0 shadow-sm mt-4">
+        <div class="card-header bg-light">
+          <h5 class="fw-bold mb-0">
+            <i class="bi bi-shield-check me-2"></i>Security
+          </h5>
+        </div>
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+              <h6 class="fw-semibold mb-1">Change Password</h6>
+              <p class="text-muted small mb-0">Update your password to keep your account secure</p>
+            </div>
+            <button class="btn btn-outline-success" onclick="showPasswordModal()">
+              <i class="bi bi-key me-1"></i>Change
+            </button>
+          </div>
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <h6 class="fw-semibold mb-1">Two-Factor Authentication</h6>
+              <p class="text-muted small mb-0">Add an extra layer of security to your account</p>
+            </div>
+            <button class="btn btn-outline-success">
+              <i class="bi bi-shield me-1"></i>Enable
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // Avatar preview
+  function previewAvatar(input) {
+    if (input.files && input.files[0]) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const avatarImg = document.querySelector('.rounded-circle');
+        avatarImg.src = e.target.result;
+      };
+      reader.readAsDataURL(input.files[0]);
+    }
+  }
+
+  // Reset form
+  function resetForm() {
+    if (confirm('Are you sure you want to reset all changes?')) {
+      document.getElementById('profileForm').reset();
+    }
+  }
+
+  // Show password change modal (placeholder)
+  function showPasswordModal() {
+    alert('Password change feature coming soon!');
+  }
+
+  // Form validation
+  document.getElementById('profileForm').addEventListener('submit', function(e) {
+    const username = document.querySelector('input[name="username"]').value.trim();
+    const email = document.querySelector('input[name="email"]').value.trim();
+
+    if (!username || !email) {
+      e.preventDefault();
+      alert('Please fill in all required fields');
+      return;
+    }
+
+    if (!isValidEmail(email)) {
+      e.preventDefault();
+      alert('Please enter a valid email address');
+      return;
+    }
+
+    if (username.length < 3) {
+      e.preventDefault();
+      alert('Username must be at least 3 characters long');
+      return;
+    }
+
+    // Show loading state
+    const submitBtn = this.querySelector('button[type="submit"]');
+    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Saving...';
+    submitBtn.disabled = true;
+  });
+
+  // Email validation
+  function isValidEmail(email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  }
+</script>
 {% endblock %}

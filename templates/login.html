@@ -1,16 +1,152 @@
 {% extends "base.html" %}
+{% block title %}Login - EcoFinds{% endblock %}
+
 {% block content %}
-<h2 class="mb-4 text-success fw-bold">🔑 Login</h2>
-<form method="POST" class="p-4 rounded shadow-sm bg-white" style="max-width:400px;margin:auto;">
-  <div class="mb-3">
-    <label class="form-label">Email</label>
-    <input type="email" name="email" class="form-control" required>
+<!-- Login Section -->
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-5 col-md-7">
+      <div class="card border-0 shadow-lg">
+        <div class="card-header bg-success text-white text-center py-4">
+          <h3 class="fw-bold mb-2">
+            <i class="bi bi-box-arrow-in-right me-2"></i>Welcome Back
+          </h3>
+          <p class="mb-0">Sign in to continue your sustainable journey</p>
+        </div>
+        <div class="card-body p-5">
+          <form method="POST" id="loginForm">
+            <div class="mb-4">
+              <label class="form-label fw-semibold">
+                <i class="bi bi-envelope me-1"></i>Email Address
+              </label>
+              <input type="email" name="email" class="form-control form-control-lg" 
+                     placeholder="Enter your email" required>
+            </div>
+            
+            <div class="mb-4">
+              <label class="form-label fw-semibold">
+                <i class="bi bi-lock me-1"></i>Password
+              </label>
+              <div class="position-relative">
+                <input type="password" name="password" class="form-control form-control-lg" 
+                       placeholder="Enter your password" required id="passwordInput">
+                <button type="button" class="btn btn-link position-absolute end-0 top-50 translate-middle-y" 
+                        onclick="togglePassword()" style="z-index: 10;">
+                  <i class="bi bi-eye" id="toggleIcon"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center mb-4">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="rememberMe">
+                <label class="form-check-label" for="rememberMe">
+                  Remember me
+                </label>
+              </div>
+              <a href="#" class="text-success text-decoration-none">Forgot password?</a>
+            </div>
+
+            <button type="submit" class="btn btn-success btn-lg w-100 mb-3">
+              <i class="bi bi-box-arrow-in-right me-2"></i>Sign In
+            </button>
+
+            <div class="text-center">
+              <p class="text-muted mb-0">Don't have an account? 
+                <a href="{{ url_for('register') }}" class="text-success fw-semibold text-decoration-none">
+                  Create one here
+                </a>
+              </p>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Social Login (Placeholder) -->
+      <div class="card border-0 shadow-sm mt-4">
+        <div class="card-body text-center">
+          <h6 class="fw-semibold mb-3">Or continue with</h6>
+          <div class="d-flex gap-3 justify-content-center">
+            <button class="btn btn-outline-primary">
+              <i class="bi bi-google me-2"></i>Google
+            </button>
+            <button class="btn btn-outline-dark">
+              <i class="bi bi-github me-2"></i>GitHub
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Eco Benefits -->
+      <div class="card border-0 shadow-sm mt-4">
+        <div class="card-body">
+          <div class="d-flex align-items-start">
+            <i class="bi bi-leaf text-success me-3 mt-1" style="font-size: 1.5rem;"></i>
+            <div>
+              <h6 class="fw-bold mb-2">Why Join EcoFinds?</h6>
+              <ul class="list-unstyled mb-0 small">
+                <li class="mb-1"><i class="bi bi-check text-success me-2"></i>Reduce waste and promote sustainability</li>
+                <li class="mb-1"><i class="bi bi-check text-success me-2"></i>Find amazing deals on quality items</li>
+                <li class="mb-1"><i class="bi bi-check text-success me-2"></i>Join a community of eco-conscious individuals</li>
+                <li class="mb-0"><i class="bi bi-check text-success me-2"></i>Track your environmental impact</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
-  <div class="mb-3">
-    <label class="form-label">Password</label>
-    <input type="password" name="password" class="form-control" required>
-  </div>
-  <button type="submit" class="btn btn-primary w-100 mb-2">Login</button>
-  <a href="{{ url_for('register') }}" class="btn btn-link w-100">Don't have an account? Register</a>
-</form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // Toggle password visibility
+  function togglePassword() {
+    const passwordInput = document.getElementById('passwordInput');
+    const toggleIcon = document.getElementById('toggleIcon');
+    
+    if (passwordInput.type === 'password') {
+      passwordInput.type = 'text';
+      toggleIcon.className = 'bi bi-eye-slash';
+    } else {
+      passwordInput.type = 'password';
+      toggleIcon.className = 'bi bi-eye';
+    }
+  }
+
+  // Form validation
+  document.getElementById('loginForm').addEventListener('submit', function(e) {
+    const email = document.querySelector('input[name="email"]').value.trim();
+    const password = document.querySelector('input[name="password"]').value;
+
+    if (!email || !password) {
+      e.preventDefault();
+      alert('Please fill in all fields');
+      return;
+    }
+
+    if (!isValidEmail(email)) {
+      e.preventDefault();
+      alert('Please enter a valid email address');
+      return;
+    }
+
+    // Show loading state
+    const submitBtn = this.querySelector('button[type="submit"]');
+    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Signing In...';
+    submitBtn.disabled = true;
+  });
+
+  // Email validation
+  function isValidEmail(email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  }
+
+  // Auto-focus on email field
+  document.addEventListener('DOMContentLoaded', function() {
+    document.querySelector('input[name="email"]').focus();
+  });
+</script>
 {% endblock %}

@@ -1,63 +1,289 @@
 {% extends "base.html" %}
+{% block title %}EcoFinds - Sustainable Second-Hand Marketplace{% endblock %}
+
 {% block content %}
-<div class="row align-items-center mb-5">
-  <div class="col-md-7">
-    <div class="p-4 rounded shadow-sm bg-white mb-4">
-      <h1 class="fw-bold text-success mb-3">Welcome to EcoFinds</h1>
-      <p class="lead">Find, buy, and sell second-hand items sustainably. Join our eco-friendly community and make a difference!</p>
-      <form method="GET" action="{{ url_for('index') }}" class="row g-2 mb-3">
-        <div class="col-md-8">
-          <input type="text" name="search" class="form-control shadow-sm" placeholder="Search products...">
-        </div>
-        <div class="col-md-4">
-          <button type="submit" class="btn btn-success w-100">Search</button>
-        </div>
-      </form>
-      <div class="d-flex gap-2">
-        <a href="{{ url_for('register') }}" class="btn btn-primary">Get Started</a>
-        <a href="{{ url_for('products') }}" class="btn btn-outline-success">Browse Products</a>
-      </div>
-    </div>
-    <div class="mt-3">
-      <div class="alert alert-info">
-        <strong>Eco Tip:</strong> Reuse, recycle, and reduce waste by shopping second-hand!
-      </div>
-    </div>
-  </div>
-  <div class="col-md-5 text-center">
-    <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80" alt="Eco Banner" class="img-fluid rounded shadow" style="max-height:320px;object-fit:cover;">
-  </div>
-</div>
-<h3 class="mb-4 fw-bold text-success">Featured Products</h3>
-<div id="featuredCarousel" class="carousel slide mb-5" data-bs-ride="carousel">
-  <div class="carousel-inner">
-    {% for p in featured_products %}
-    <div class="carousel-item {% if loop.index == 1 %}active{% endif %}">
-      <div class="d-flex justify-content-center">
-        <div class="card border-0 shadow-sm" style="width: 22rem;">
-          <img src="{{ p.image }}" class="card-img-top rounded-circle mx-auto mt-4" alt="Product" style="width:140px;height:140px;object-fit:cover;">
-          <div class="card-body d-flex flex-column text-center">
-            <h5 class="card-title fw-bold text-success">{{ p.title }}</h5>
-            <p class="card-text mb-2">${{ p.price }}</p>
-            <p class="card-text text-muted" style="min-height:40px;">{{ p.description }}</p>
-            <div class="mt-auto">
-              <a href="{{ url_for('add_to_cart', pid=p.id) }}" class="btn btn-warning w-100">
-                <i class="bi bi-cart-plus me-1"></i> Add to Cart
+<!-- Hero Section -->
+<section class="hero-section">
+  <div class="container">
+    <div class="row align-items-center min-vh-75">
+      <div class="col-lg-6">
+        <div class="hero-content animate__animated animate__fadeInLeft">
+          <h1 class="display-4 fw-bold mb-4">
+            <span class="text-success">EcoFinds</span>
+            <br>
+            <span class="text-dark">Sustainable Shopping</span>
+            <br>
+            <span class="text-muted fs-3">Made Simple</span>
+          </h1>
+          <p class="lead mb-4 text-muted">
+            Join thousands of eco-conscious individuals buying and selling pre-loved items. 
+            Reduce waste, save money, and build a sustainable future together.
+          </p>
+          
+          <!-- Enhanced Search Bar -->
+          <div class="search-container mb-4">
+            <form method="GET" action="{{ url_for('index') }}" class="search-form">
+              <div class="input-group input-group-lg shadow-lg">
+                <span class="input-group-text bg-white border-0">
+                  <i class="bi bi-search text-success"></i>
+                </span>
+                <input type="text" name="search" class="form-control border-0" 
+                       placeholder="Search for sustainable treasures..." 
+                       style="font-size: 1.1rem;">
+                <button type="submit" class="btn btn-success px-4">
+                  <i class="bi bi-search me-2"></i>Search
+                </button>
+              </div>
+            </form>
+          </div>
+          
+          <!-- CTA Buttons -->
+          <div class="d-flex flex-wrap gap-3 mb-4">
+            {% if not current_user.is_authenticated %}
+              <a href="{{ url_for('register') }}" class="btn btn-success btn-lg px-4 py-3">
+                <i class="bi bi-person-plus me-2"></i>Join the Community
               </a>
+              <a href="{{ url_for('index') }}" class="btn btn-outline-success btn-lg px-4 py-3">
+                <i class="bi bi-grid-3x3-gap me-2"></i>Browse Items
+              </a>
+            {% else %}
+              <a href="{{ url_for('add_product') }}" class="btn btn-success btn-lg px-4 py-3">
+                <i class="bi bi-plus-circle me-2"></i>Sell Your Items
+              </a>
+              <a href="{{ url_for('index') }}" class="btn btn-outline-success btn-lg px-4 py-3">
+                <i class="bi bi-grid-3x3-gap me-2"></i>Discover More
+              </a>
+            {% endif %}
+          </div>
+          
+          <!-- Stats -->
+          <div class="row text-center">
+            <div class="col-4">
+              <div class="stat-item">
+                <h3 class="fw-bold text-success mb-1">10K+</h3>
+                <small class="text-muted">Items Sold</small>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="stat-item">
+                <h3 class="fw-bold text-success mb-1">5K+</h3>
+                <small class="text-muted">Happy Users</small>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="stat-item">
+                <h3 class="fw-bold text-success mb-1">50K+</h3>
+                <small class="text-muted">CO₂ Saved</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="hero-image animate__animated animate__fadeInRight">
+          <div class="position-relative">
+            <img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=800&q=80" 
+                 alt="Sustainable Shopping" class="img-fluid rounded-4 shadow-lg">
+            <div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center">
+              <div class="text-center text-white">
+                <i class="bi bi-recycle display-1 mb-3"></i>
+                <h4 class="fw-bold">Eco-Friendly</h4>
+                <p class="mb-0">Every purchase makes a difference</p>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-    {% endfor %}
   </div>
-  <button class="carousel-control-prev" type="button" data-bs-target="#featuredCarousel" data-bs-slide="prev">
-    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-    <span class="visually-hidden">Previous</span>
-  </button>
-  <button class="carousel-control-next" type="button" data-bs-target="#featuredCarousel" data-bs-slide="next">
-    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-    <span class="visually-hidden">Next</span>
-  </button>
-</div>
+</section>
+
+<!-- Features Section -->
+<section class="py-5">
+  <div class="container">
+    <div class="row text-center mb-5">
+      <div class="col-lg-8 mx-auto">
+        <h2 class="fw-bold mb-3">Why Choose EcoFinds?</h2>
+        <p class="lead text-muted">We're making sustainable shopping accessible, affordable, and enjoyable for everyone.</p>
+      </div>
+    </div>
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="feature-card text-center p-4 h-100">
+          <div class="feature-icon mb-3">
+            <i class="bi bi-leaf-fill text-success" style="font-size: 3rem;"></i>
+          </div>
+          <h5 class="fw-bold mb-3">Eco-Friendly</h5>
+          <p class="text-muted">Every purchase reduces waste and promotes circular economy principles.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="feature-card text-center p-4 h-100">
+          <div class="feature-icon mb-3">
+            <i class="bi bi-shield-check text-success" style="font-size: 3rem;"></i>
+          </div>
+          <h5 class="fw-bold mb-3">Secure & Safe</h5>
+          <p class="text-muted">Your transactions are protected with industry-standard security measures.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="feature-card text-center p-4 h-100">
+          <div class="feature-icon mb-3">
+            <i class="bi bi-people-fill text-success" style="font-size: 3rem;"></i>
+          </div>
+          <h5 class="fw-bold mb-3">Community Driven</h5>
+          <p class="text-muted">Join a community of like-minded individuals committed to sustainability.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Featured Products Section -->
+<section class="py-5 bg-light">
+  <div class="container">
+    <div class="row mb-5">
+      <div class="col-lg-8 mx-auto text-center">
+        <h2 class="fw-bold mb-3">Featured Sustainable Finds</h2>
+        <p class="lead text-muted">Discover amazing pre-loved items from our community</p>
+      </div>
+    </div>
+    
+    {% if featured_products %}
+    <div class="row g-4">
+      {% for p in featured_products %}
+      <div class="col-lg-3 col-md-6">
+        <div class="card product-card h-100">
+          <div class="position-relative">
+            <img src="{{ p.image }}" class="card-img-top" alt="{{ p.title }}" style="height: 250px; object-fit: cover;">
+            <div class="position-absolute top-0 end-0 m-2">
+              <span class="badge bg-success">
+                <i class="bi bi-leaf me-1"></i>Eco
+              </span>
+            </div>
+            <div class="position-absolute top-0 start-0 m-2">
+              <span class="badge bg-warning text-dark">
+                <i class="bi bi-star-fill me-1"></i>Featured
+              </span>
+            </div>
+          </div>
+          <div class="card-body d-flex flex-column">
+            <h5 class="card-title fw-bold text-success">{{ p.title }}</h5>
+            <p class="card-text text-muted small">{{ p.description[:100] }}{% if p.description|length > 100 %}...{% endif %}</p>
+            <div class="mt-auto">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <span class="h4 fw-bold text-success mb-0">${{ p.price }}</span>
+                <span class="badge bg-light text-dark">{{ p.category }}</span>
+              </div>
+              {% if current_user.is_authenticated %}
+                <a href="{{ url_for('add_to_cart', pid=p.id) }}" class="btn btn-warning w-100">
+                  <i class="bi bi-cart-plus me-2"></i>Add to Cart
+                </a>
+              {% else %}
+                <a href="{{ url_for('login') }}" class="btn btn-outline-success w-100">
+                  <i class="bi bi-box-arrow-in-right me-2"></i>Login to Buy
+                </a>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    
+    <div class="text-center mt-5">
+      <a href="{{ url_for('index') }}" class="btn btn-success btn-lg">
+        <i class="bi bi-grid-3x3-gap me-2"></i>View All Products
+      </a>
+    </div>
+    {% else %}
+    <div class="text-center py-5">
+      <i class="bi bi-box-seam text-muted" style="font-size: 4rem;"></i>
+      <h4 class="text-muted mt-3">No products available yet</h4>
+      <p class="text-muted">Be the first to list an item!</p>
+      {% if current_user.is_authenticated %}
+        <a href="{{ url_for('add_product') }}" class="btn btn-success">
+          <i class="bi bi-plus-circle me-2"></i>List Your First Item
+        </a>
+      {% endif %}
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+<!-- Call to Action Section -->
+<section class="py-5 bg-success text-white">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-8">
+        <h2 class="fw-bold mb-3">Ready to Start Your Sustainable Journey?</h2>
+        <p class="lead mb-0">Join thousands of eco-conscious individuals making a difference through sustainable shopping.</p>
+      </div>
+      <div class="col-lg-4 text-lg-end">
+        {% if not current_user.is_authenticated %}
+          <a href="{{ url_for('register') }}" class="btn btn-light btn-lg">
+            <i class="bi bi-person-plus me-2"></i>Get Started Today
+          </a>
+        {% else %}
+          <a href="{{ url_for('add_product') }}" class="btn btn-light btn-lg">
+            <i class="bi bi-plus-circle me-2"></i>List Your Items
+          </a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Eco Tips Section -->
+<section class="py-5">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 mx-auto">
+        <div class="alert alert-info border-0 shadow-sm">
+          <div class="d-flex align-items-start">
+            <i class="bi bi-lightbulb text-success me-3" style="font-size: 1.5rem;"></i>
+            <div>
+              <h6 class="fw-bold mb-2">💡 Eco Tip of the Day</h6>
+              <p class="mb-0">Did you know? Buying one second-hand item instead of new can save up to 82% of the carbon footprint! Every purchase on EcoFinds contributes to a more sustainable future.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<style>
+  .min-vh-75 { min-height: 75vh; }
+  .hero-content { z-index: 2; position: relative; }
+  .hero-image { z-index: 1; position: relative; }
+  .feature-card {
+    background: white;
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-soft);
+    transition: var(--transition);
+  }
+  .feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-hover);
+  }
+  .product-card {
+    transition: var(--transition);
+  }
+  .product-card:hover {
+    transform: translateY(-5px);
+  }
+  .search-form .input-group {
+    border-radius: var(--border-radius-lg);
+    overflow: hidden;
+  }
+  .stat-item {
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: var(--border-radius);
+    backdrop-filter: blur(10px);
+  }
+</style>
 {% endblock %}

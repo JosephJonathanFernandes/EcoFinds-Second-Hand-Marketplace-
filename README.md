@@ -1,169 +1,272 @@
-# EcoFinds – Sustainable Second-Hand Marketplace
+# 🌱 EcoFinds - Sustainable Second-Hand Marketplace
 
-EcoFinds is a collaborative web application for buying and selling second-hand items, designed to promote sustainable consumption. Built with Flask and SQLite, it provides a secure, user-friendly platform for product listings, purchases, and user management.
+A modern, full-stack web application built for the NMIT x ODOO Hackathon that promotes sustainable consumption through a user-friendly second-hand marketplace.
 
----
+## 🚀 Features
 
-## 🚀 Project Goals
-- Make second-hand shopping easy and accessible
-- Encourage sustainable consumption
-- Provide a simple, intuitive user experience
-- Enable team collaboration and easy onboarding
+### Core Functionality
+- **User Authentication & Management**: Secure registration, login, and profile management
+- **Product Listings**: Create, read, update, and delete product listings with image upload
+- **Advanced Search & Filtering**: Real-time search with category, price range, and keyword filtering
+- **Shopping Cart System**: Add items, manage quantities, and proceed to checkout
+- **Purchase History**: Track all purchases with detailed transaction history
+- **User Dashboard**: Comprehensive dashboard for managing listings and viewing analytics
 
----
+### Advanced Features
+- **Real-time Data**: Dynamic product listings and live inventory management
+- **Responsive Design**: Mobile-first design that works seamlessly across all devices
+- **Image Upload**: Secure file handling for product and profile images
+- **Eco Impact Tracking**: Real-time environmental impact metrics for users
+- **Advanced UI/UX**: Modern design with animations, micro-interactions, and intuitive navigation
+- **Form Validation**: Robust client-side and server-side input validation
+- **Security**: CSRF protection, input sanitization, and secure file uploads
 
-## 🧑‍💻 Getting Started (For Developers)
-1. **Clone the repository:**
-   ```sh
-   git clone <your-repo-url>
-   cd ecofinds
+## 🛠️ Technology Stack
+
+### Backend
+- **Flask**: Python web framework
+- **SQLAlchemy**: ORM for database management
+- **SQLite**: Local database for reliability and offline capability
+- **Flask-Login**: User session management
+- **Werkzeug**: Security utilities for password hashing and file handling
+
+### Frontend
+- **Bootstrap 5**: Responsive CSS framework
+- **Bootstrap Icons**: Comprehensive icon library
+- **Custom CSS**: Modern styling with CSS variables and animations
+- **JavaScript**: Enhanced user interactions and form validation
+- **Jinja2**: Template engine for dynamic content
+
+### Development Tools
+- **Git**: Version control
+- **Python 3.8+**: Programming language
+- **HTML5 & CSS3**: Markup and styling
+- **Responsive Design**: Mobile-first approach
+
+## 📁 Project Structure
+
+```
+EcoFinds-Second-Hand-Marketplace/
+├── app.py                 # Main Flask application
+├── models.py              # Database models
+├── forms.py               # WTForms definitions
+├── requirements.txt       # Python dependencies
+├── static/
+│   ├── style.css         # Custom CSS styles
+│   ├── uploads/          # Product images
+│   └── avatars/          # User avatars
+├── templates/
+│   ├── base.html         # Base template
+│   ├── landing.html      # Homepage
+│   ├── products.html     # Product listings
+│   ├── dashboard.html    # User dashboard
+│   ├── cart.html         # Shopping cart
+│   ├── purchases.html    # Purchase history
+│   ├── profile.html      # User profile
+│   ├── login.html        # Login page
+│   ├── register.html     # Registration page
+│   └── add_product.html  # Add product form
+├── instance/
+│   └── ecofinds.db       # SQLite database
+└── README.md             # Project documentation
+```
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Python 3.8 or higher
+- pip (Python package installer)
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/yourusername/EcoFinds-Second-Hand-Marketplace.git
+   cd EcoFinds-Second-Hand-Marketplace
    ```
-2. **Set up your Python environment:**
-   ```sh
-   python -m venv .venv
-   .venv\Scripts\activate  # Windows
-   source .venv/bin/activate  # macOS/Linux
+
+2. **Create a virtual environment**
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
    ```
-3. **Install dependencies:**
-   ```sh
+
+3. **Install dependencies**
+   ```bash
    pip install -r requirements.txt
    ```
-4. **Run the app:**
-   ```sh
+
+4. **Populate with sample data (Recommended)**
+   ```bash
+   python seed_database.py
+   ```
+   Or run the automated setup:
+   ```bash
+   python setup.py
+   ```
+
+5. **Run the application**
+   ```bash
    python app.py
    ```
-5. **Troubleshooting:**
-   - If you see database errors, delete `instance/ecofinds.db` and restart.
-   - For missing packages, run `pip install -r requirements.txt` again.
-   - For static file issues, check the `static/` folder and file paths.
 
----
+6. **Open your browser**
+   Navigate to `http://localhost:5000`
 
-## 🚩 Features (Detailed)
+### Demo Login Credentials
+- **Email**: sarah.green@example.com
+- **Password**: password123
 
-- **User Authentication**
-  - Secure registration, login, and logout using Flask-Login.
-  - Passwords are hashed for safety.
-  - Only registered users can add products, purchase, or access their dashboard.
+## 🎯 Hackathon Requirements Compliance
 
-- **User Dashboard**
-  - Personalized dashboard for each user.
-  - View all products you have listed for sale.
-  - Edit or delete your listings directly from the dashboard.
+### ✅ Mandatory Requirements
+- **Real-time/Dynamic Data**: Live product listings, real-time search, and dynamic cart updates
+- **Responsive & Clean UI**: Mobile-first design with consistent eco-friendly color scheme
+- **Robust Input Validation**: Client-side and server-side validation with real-time feedback
+- **Intuitive Navigation**: Clear menu structure with logical user flow
+- **Version Control**: Proper Git repository with meaningful commits
 
-- **Product Listings (CRUD)**
-  - Create: Add new products with title, description, category, price, and image.
-  - Read: View all products in the public feed or your dashboard.
-  - Update: Edit product details and images.
-  - Delete: Remove products you no longer wish to sell.
+### ✅ Good-to-Have Features
+- **Backend API Design**: RESTful endpoints with proper HTTP methods
+- **Data Modeling**: Comprehensive database schema with relationships
+- **Local Database**: SQLite for offline capability and reduced cloud dependency
+- **Value-Added Technology**: Real-time features that enhance user experience
 
-- **Product Feed & Search**
-  - Browse all available products in a feed view.
-  - Filter by category or search by keyword.
-  - Each product displays title, price, description, and image.
+## 🌟 Key Features Highlights
 
-- **Cart System**
-  - Add products to your cart for later purchase.
-  - View all items in your cart before checkout.
-  - Remove items from your cart if you change your mind.
+### 1. **Eco Impact Tracking**
+- Real-time CO₂ savings calculation
+- Items recycled counter
+- Money saved vs. new purchases
+- Environmental impact visualization
 
-- **Purchasing & Purchase History**
-  - Purchase all items in your cart with one click.
-  - Purchased items are tracked in your purchase history.
-  - View details of past purchases at any time.
+### 2. **Advanced Search & Filtering**
+- Keyword search across product titles
+- Category-based filtering
+- Price range filtering
+- Multiple sorting options (price, name, newest)
 
-- **Profile Management**
-  - Update your username and email address.
-  - Upload a custom avatar image.
-  - Changes are reflected across the app instantly.
+### 3. **Modern UI/UX**
+- Smooth animations and transitions
+- Hover effects and micro-interactions
+- Responsive grid layouts
+- Intuitive form design with real-time validation
 
-- **Responsive Design**
-  - Uses Bootstrap for a clean, mobile-friendly interface.
-  - Works well on desktops, tablets, and smartphones.
+### 4. **Security Features**
+- Password hashing with Werkzeug
+- CSRF protection
+- Input sanitization
+- Secure file upload handling
 
-- **Security**
-  - User authentication and session management.
-  - Input validation for forms.
-  - Database operations use SQLAlchemy ORM for safety.
+### 5. **User Experience**
+- Progressive enhancement
+- Loading states and user feedback
+- Error handling with helpful messages
+- Mobile-optimized interface
 
----
+## 🔧 API Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/` | Product listings with search/filter |
+| GET | `/landing` | Homepage with featured products |
+| GET/POST | `/register` | User registration |
+| GET/POST | `/login` | User authentication |
+| GET | `/dashboard` | User dashboard |
+| GET/POST | `/add_product` | Add new product listing |
+| GET | `/cart` | Shopping cart |
+| GET | `/purchases` | Purchase history |
+| GET/POST | `/profile` | User profile management |
+| POST | `/add_to_cart/<id>` | Add item to cart |
+| POST | `/purchase` | Complete purchase |
+| GET | `/search` | Advanced search with filters |
+
+## 🎨 Design System
+
+### Color Palette
+- **Primary Green**: #00C851
+- **Secondary Green**: #00A041
+- **Accent Green**: #43ea7c
+- **Light Green**: #E8F5E8
+- **Dark Green**: #006400
+
+### Typography
+- **Font Family**: Inter (Google Fonts)
+- **Headings**: Bold weights (600-800)
+- **Body Text**: Regular weight (400)
+- **Small Text**: Light weight (300)
+
+### Components
+- **Cards**: Rounded corners with subtle shadows
+- **Buttons**: Gradient backgrounds with hover effects
+- **Forms**: Clean inputs with validation states
+- **Navigation**: Fixed header with smooth scrolling
+
+## 📦 Sample Data
+
+The application comes with pre-populated sample data including:
+
+### **👥 Sample Users (5 users)**
+- **Sarah Green** - Eco-conscious fashion enthusiast
+- **Eco Mike** - Technology and sustainability advocate  
+- **Sustainable Sam** - Home and garden expert
+- **Green Lisa** - Vintage and retro collector
+- **Recycle Ryan** - Sports and fitness enthusiast
+
+### **🛍️ Sample Products (25+ items)**
+- **Electronics**: MacBook Pro, iPhone 12 Pro, Sony Headphones, iPad Air, Nintendo Switch
+- **Clothing**: Vintage denim jacket, organic cotton tees, leather handbag, vintage band shirts
+- **Home & Garden**: Bamboo kitchen utensils, succulent plants, vintage dining table
+- **Books & Media**: Zero waste living guides, vinyl record collection
+- **Sports & Fitness**: Eco-friendly yoga mat, vintage bicycle
+- **Toys & Games**: Wooden building blocks, vintage board games
+- **Beauty & Health**: Organic skincare set, bamboo toothbrushes
+- **Automotive**: Bamboo car phone mount
+
+### **🛒 Demo Features**
+- Pre-filled shopping cart with sample items
+- Purchase history with environmental impact metrics
+- User profiles with avatars and eco stats
+- Realistic product descriptions and pricing
+
+## 🚀 Future Enhancements
+
+- **Real-time Notifications**: WebSocket integration for live updates
+- **Payment Integration**: Stripe/PayPal integration for secure payments
+- **AI Recommendations**: Machine learning for product suggestions
+- **Mobile App**: React Native mobile application
+- **Social Features**: User reviews, ratings, and social sharing
+- **Analytics Dashboard**: Advanced analytics for sellers
 
 ## 🤝 Contributing
-- Branch from `main` for new features or bug fixes
-- Commit with clear messages (e.g., `feat: add product search`)
-- Open a pull request and tag teammates for review
-- Use issues to track bugs, ideas, and questions
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 👥 Team
+
+**WizCoders** - NMIT x ODOO Hackathon 2025
+- Full-stack development
+- UI/UX design
+- Database architecture
+- Security implementation
+
+## 🙏 Acknowledgments
+
+- Bootstrap team for the excellent CSS framework
+- Flask community for comprehensive documentation
+- Unsplash for beautiful placeholder images
+- All contributors and testers
 
 ---
 
-## 👤 Example User Stories
-- "As a new user, I want to register and log in so I can list my items."
-- "As a buyer, I want to browse products and add them to my cart."
-- "As a seller, I want to view my dashboard and manage my listings."
-- "As a user, I want to update my profile and avatar."
+**Built with ❤️ for a sustainable future**
 
----
-
-## 🗂️ File & Folder Overview
-| Name              | Purpose                                      |
-|-------------------|----------------------------------------------|
-| `app.py`          | Main Flask app and route definitions         |
-| `models.py`       | Database models (User, Product, etc.)        |
-| `forms.py`        | WTForms definitions for user/product forms   |
-| `migrate_db.py`   | Database migration script                    |
-| `requirements.txt`| Python dependencies                          |
-| `.gitignore`      | Files/folders to ignore in git               |
-| `instance/`       | Contains the SQLite database                 |
-| `static/`         | CSS, avatars, and other static files         |
-| `templates/`      | HTML templates (Bootstrap/Jinja2)            |
-
----
-
-## 🖼️ Screenshots
-*Add screenshots of the landing page, dashboard, product feed, etc. here for reference.*
-
----
-
-## ❓ FAQ
-- **How do I reset my password?**
-  - Currently, password reset is not implemented. Contact the admin for help.
-- **How do I add a new feature?**
-  - Create a new branch, implement your feature, and open a pull request.
-- **Where is the database stored?**
-  - In `instance/ecofinds.db` (ignored by git).
-
----
-
-## 📬 Contact & Support
-- For questions, open an issue or contact the project owner.
-- Team members: Add your name and contact info here!
-
----
-
-## 📑 License
-This project is for educational and demonstration purposes only.
-
----
-
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Python](https://img.shields.io/badge/Python-3.11%2B-blue.svg)](https://www.python.org/)
-[![Flask](https://img.shields.io/badge/Flask-3.1.2-green.svg)](https://flask.palletsprojects.com/)
-
----
-
-## 🛠️ Continuous Integration (CI/CD)
-- Recommended: Set up GitHub Actions for automated testing and linting.
-- Example workflow:
-  - On every push or pull request, run `pytest` and `flake8`.
-  - Fail builds on test or lint errors.
-- See [GitHub Actions documentation](https://docs.github.com/en/actions) for setup.
-
----
-
-## 📚 Extended Documentation
-- For API details, see the Endpoints section above.
-- For database schema, see `models.py` and comments in code.
-- For form usage, see `forms.py` and template files.
-- For deployment, see Flask docs or use platforms like Heroku, Vercel, or Render.
-
----
+*Every purchase on EcoFinds contributes to a circular economy and reduces environmental waste. Join us in making a difference!*

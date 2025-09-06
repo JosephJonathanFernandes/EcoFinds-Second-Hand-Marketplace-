@@ -1,22 +1,276 @@
 {% extends "base.html" %}
+{% block title %}Purchase History - EcoFinds{% endblock %}
+
 {% block content %}
-<h2 class="mb-4 text-success fw-bold">📜 Previous Purchases</h2>
-{% if products %}
-<div class="row">
-  {% for p in products %}
-  <div class="col-md-4 d-flex align-items-stretch">
-    <div class="card mb-4 border-0 shadow-sm">
-      <img src="{{ p.image }}" class="card-img-top" alt="Product" style="height:220px;object-fit:cover;border-radius:16px 16px 0 0;">
-      <div class="card-body d-flex flex-column">
-        <h5 class="card-title fw-bold text-success">{{ p.title }}</h5>
-        <p class="card-text mb-2">${{ p.price }}</p>
-        <p class="card-text text-muted" style="min-height:40px;">{{ p.description }}</p>
+<!-- Page Header -->
+<div class="container-fluid bg-light py-4">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-8">
+        <h1 class="display-6 fw-bold text-success mb-2">
+          <i class="bi bi-receipt me-3"></i>Purchase History
+        </h1>
+        <p class="lead text-muted mb-0">Track your sustainable shopping journey and environmental impact</p>
+      </div>
+      <div class="col-lg-4 text-lg-end">
+        <a href="{{ url_for('index') }}" class="btn btn-outline-success">
+          <i class="bi bi-arrow-left me-2"></i>Continue Shopping
+        </a>
       </div>
     </div>
   </div>
-  {% endfor %}
 </div>
-{% else %}
-<p class="text-muted">No purchases yet.</p>
-{% endif %}
+
+<!-- Purchase Stats -->
+<div class="container py-4">
+  <div class="row g-4 mb-5">
+    <div class="col-lg-3 col-md-6">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-body text-center">
+          <div class="feature-icon mb-3">
+            <i class="bi bi-bag-check text-success" style="font-size: 2.5rem;"></i>
+          </div>
+          <h3 class="fw-bold text-success mb-1">{{ products|length }}</h3>
+          <p class="text-muted mb-0">Total Purchases</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-3 col-md-6">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-body text-center">
+          <div class="feature-icon mb-3">
+            <i class="bi bi-currency-dollar text-warning" style="font-size: 2.5rem;"></i>
+          </div>
+          <h3 class="fw-bold text-warning mb-1">${{ "%.2f"|format(products|sum(attribute='price')) }}</h3>
+          <p class="text-muted mb-0">Total Spent</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-3 col-md-6">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-body text-center">
+          <div class="feature-icon mb-3">
+            <i class="bi bi-leaf text-success" style="font-size: 2.5rem;"></i>
+          </div>
+          <h3 class="fw-bold text-success mb-1">{{ "%.1f"|format(products|length * 0.5) }}kg</h3>
+          <p class="text-muted mb-0">CO₂ Saved</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-3 col-md-6">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-body text-center">
+          <div class="feature-icon mb-3">
+            <i class="bi bi-star-fill text-warning" style="font-size: 2.5rem;"></i>
+          </div>
+          <h3 class="fw-bold text-warning mb-1">4.8</h3>
+          <p class="text-muted mb-0">Avg Rating</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Purchase History -->
+  {% if products %}
+    <div class="row">
+      <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h3 class="fw-bold text-success mb-0">
+            <i class="bi bi-clock-history me-2"></i>Your Purchases
+          </h3>
+          <div class="d-flex gap-2">
+            <button class="btn btn-outline-success" id="gridViewBtn">
+              <i class="bi bi-grid-3x3-gap"></i>
+            </button>
+            <button class="btn btn-outline-success active" id="listViewBtn">
+              <i class="bi bi-list"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="row g-4" id="purchasesContainer">
+          {% for p in products %}
+          <div class="col-lg-4 col-md-6">
+            <div class="card purchase-card h-100">
+              <div class="position-relative">
+                <img src="{{ p.image }}" class="card-img-top" alt="{{ p.title }}" 
+                     style="height: 250px; object-fit: cover;">
+                <div class="position-absolute top-0 end-0 m-2">
+                  <span class="badge bg-success">
+                    <i class="bi bi-check-circle me-1"></i>Purchased
+                  </span>
+                </div>
+                <div class="position-absolute top-0 start-0 m-2">
+                  <span class="badge bg-warning text-dark">
+                    <i class="bi bi-tag me-1"></i>{{ p.category }}
+                  </span>
+                </div>
+                <div class="position-absolute bottom-0 start-0 w-100 p-3">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <span class="h4 fw-bold text-white mb-0 text-shadow">${{ p.price }}</span>
+                    <div class="d-flex gap-1">
+                      <button class="btn btn-light btn-sm rounded-circle" title="Rate Purchase">
+                        <i class="bi bi-star"></i>
+                      </button>
+                      <button class="btn btn-light btn-sm rounded-circle" title="Repurchase">
+                        <i class="bi bi-arrow-clockwise"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="card-body d-flex flex-column">
+                <h5 class="card-title fw-bold text-success mb-2">{{ p.title }}</h5>
+                <p class="card-text text-muted small mb-3" style="min-height: 40px;">
+                  {{ p.description[:80] }}{% if p.description|length > 80 %}...{% endif %}
+                </p>
+                <div class="mt-auto">
+                  <div class="d-flex justify-content-between align-items-center mb-3">
+                    <small class="text-muted">
+                      <i class="bi bi-person-circle me-1"></i>from {{ p.owner.username }}
+                    </small>
+                    <div class="d-flex align-items-center">
+                      <i class="bi bi-star-fill text-warning me-1"></i>
+                      <small class="text-muted">4.8</small>
+                    </div>
+                  </div>
+                  <div class="d-flex justify-content-between align-items-center mb-3">
+                    <small class="text-muted">
+                      <i class="bi bi-calendar me-1"></i>Purchased 2 days ago
+                    </small>
+                    <span class="badge bg-light text-success">
+                      <i class="bi bi-truck me-1"></i>Delivered
+                    </span>
+                  </div>
+                  <div class="d-grid gap-2">
+                    <button class="btn btn-outline-success btn-sm">
+                      <i class="bi bi-star me-1"></i>Rate Purchase
+                    </button>
+                    <button class="btn btn-outline-primary btn-sm">
+                      <i class="bi bi-arrow-clockwise me-1"></i>Buy Similar
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Eco Impact Summary -->
+    <div class="card border-0 shadow-sm mt-5">
+      <div class="card-header bg-success text-white">
+        <h5 class="fw-bold mb-0">
+          <i class="bi bi-leaf me-2"></i>Your Environmental Impact
+        </h5>
+      </div>
+      <div class="card-body">
+        <div class="row text-center">
+          <div class="col-md-3">
+            <div class="h3 fw-bold text-success mb-2">{{ "%.1f"|format(products|length * 0.5) }}kg</div>
+            <p class="text-muted mb-0">CO₂ Emissions Prevented</p>
+          </div>
+          <div class="col-md-3">
+            <div class="h3 fw-bold text-success mb-2">{{ products|length }}</div>
+            <p class="text-muted mb-0">Items Given Second Life</p>
+          </div>
+          <div class="col-md-3">
+            <div class="h3 fw-bold text-success mb-2">${{ "%.0f"|format(products|sum(attribute='price') * 0.3) }}</div>
+            <p class="text-muted mb-0">Money Saved vs New</p>
+          </div>
+          <div class="col-md-3">
+            <div class="h3 fw-bold text-success mb-2">100%</div>
+            <p class="text-muted mb-0">Eco-Friendly</p>
+          </div>
+        </div>
+        <div class="text-center mt-4">
+          <p class="lead text-muted mb-0">
+            <i class="bi bi-heart-fill text-danger me-2"></i>
+            Thank you for choosing sustainable shopping! Every purchase makes a difference.
+          </p>
+        </div>
+      </div>
+    </div>
+
+  {% else %}
+    <!-- Empty State -->
+    <div class="text-center py-5">
+      <div class="mb-4">
+        <i class="bi bi-bag text-muted" style="font-size: 4rem;"></i>
+      </div>
+      <h3 class="fw-bold text-muted mb-3">No Purchases Yet</h3>
+      <p class="text-muted mb-4">Start your sustainable shopping journey by exploring our amazing pre-loved items!</p>
+      <div class="d-flex gap-3 justify-content-center">
+        <a href="{{ url_for('index') }}" class="btn btn-success btn-lg">
+          <i class="bi bi-search me-2"></i>Browse Products
+        </a>
+        <a href="{{ url_for('landing') }}" class="btn btn-outline-success btn-lg">
+          <i class="bi bi-house me-2"></i>Go Home
+        </a>
+      </div>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<style>
+  .text-shadow {
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+  }
+  .purchase-card {
+    transition: var(--transition);
+    border: 1px solid rgba(0, 200, 81, 0.1);
+  }
+  .purchase-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-hover);
+  }
+  .btn-group .btn.active {
+    background-color: var(--primary-green);
+    border-color: var(--primary-green);
+    color: white;
+  }
+</style>
+
+<script>
+  // View toggle functionality
+  document.getElementById('gridViewBtn').addEventListener('click', function() {
+    this.classList.add('active');
+    document.getElementById('listViewBtn').classList.remove('active');
+    document.getElementById('purchasesContainer').className = 'row g-4';
+  });
+
+  document.getElementById('listViewBtn').addEventListener('click', function() {
+    this.classList.add('active');
+    document.getElementById('gridViewBtn').classList.remove('active');
+    document.getElementById('purchasesContainer').className = 'row g-2';
+    
+    // Convert cards to list view
+    const cards = document.querySelectorAll('.purchase-card');
+    cards.forEach(card => {
+      card.className = 'card purchase-card mb-3';
+      const col = card.parentElement;
+      col.className = 'col-12';
+    });
+  });
+
+  // Rate purchase functionality (placeholder)
+  document.querySelectorAll('[title="Rate Purchase"]').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      alert('Rating system coming soon!');
+    });
+  });
+
+  // Repurchase functionality (placeholder)
+  document.querySelectorAll('[title="Repurchase"]').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      alert('Repurchase feature coming soon!');
+    });
+  });
+</script>
 {% endblock %}

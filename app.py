@@ -7,6 +7,7 @@ from flask_login import LoginManager, login_user, logout_user, login_required, U
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 import os
+import time
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'hackathon-secret'
@@ -117,10 +118,29 @@ def add_product():
         desc = request.form['description']
         category = request.form['category']
         price = float(request.form['price'])
+        
+        # Handle image upload
+        image_url = "https://via.placeholder.com/150"
+        if 'image' in request.files:
+            file = request.files['image']
+            if file and file.filename:
+                filename = secure_filename(file.filename)
+                if filename:
+                    # Create uploads directory if it doesn't exist
+                    upload_dir = os.path.join('static', 'uploads')
+                    os.makedirs(upload_dir, exist_ok=True)
+                    
+                    # Save file with unique name
+                    unique_filename = f"{current_user.id}_{int(time.time())}_{filename}"
+                    file_path = os.path.join(upload_dir, unique_filename)
+                    file.save(file_path)
+                    image_url = f"/static/uploads/{unique_filename}"
+        
         product = Product(title=title, description=desc, category=category,
-                          price=price, owner=current_user)
+                          price=price, image=image_url, owner=current_user)
         db.session.add(product)
         db.session.commit()
+        flash('Product listed successfully!', 'success')
         return redirect(url_for('dashboard'))
     return render_template('add_product.html')
 
@@ -178,23 +198,111 @@ def profile():
         username = request.form.get('username')
         email = request.form.get('email')
         avatar_file = request.files.get('avatar')
-        if username:
+        
+        if username and username != current_user.username:
+            # Check if username is already taken
+            existing_user = User.query.filter_by(username=username).first()
+            if existing_user:
+                flash('Username already taken!', 'error')
+                return redirect(url_for('profile'))
             current_user.username = username
-        if email:
+            
+        if email and email != current_user.email:
+            # Check if email is already taken
+            existing_email = User.query.filter_by(email=email).first()
+            if existing_email:
+                flash('Email already registered!', 'error')
+                return redirect(url_for('profile'))
             current_user.email = email
+            
         if avatar_file and avatar_file.filename:
             filename = secure_filename(avatar_file.filename)
-            avatar_path = os.path.join('static', 'avatars', f"{current_user.id}_{filename}")
-            os.makedirs(os.path.dirname(avatar_path), exist_ok=True)
-            avatar_file.save(avatar_path)
-            current_user.avatar = '/' + avatar_path.replace('\\', '/')
+            if filename:
+                # Create avatars directory if it doesn't exist
+                avatar_dir = os.path.join('static', 'avatars')
+                os.makedirs(avatar_dir, exist_ok=True)
+                
+                # Save with unique filename
+                unique_filename = f"{current_user.id}_{int(time.time())}_{filename}"
+                avatar_path = os.path.join(avatar_dir, unique_filename)
+                avatar_file.save(avatar_path)
+                current_user.avatar = f"/static/avatars/{unique_filename}"
+        
         db.session.commit()
-        flash('Profile updated!')
+        flash('Profile updated successfully!', 'success')
         return redirect(url_for('profile'))
     return render_template('profile.html')
 
+@app.route('/remove_from_cart/<int:product_id>')
+@login_required
+def remove_from_cart(product_id):
+    cart_item = Cart.query.filter_by(user_id=current_user.id, product_id=product_id).first()
+    if cart_item:
+        db.session.delete(cart_item)
+        db.session.commit()
+        flash('Item removed from cart!', 'info')
+    return redirect(url_for('cart'))
+
+@app.route('/clear_cart')
+@login_required
+def clear_cart():
+    Cart.query.filter_by(user_id=current_user.id).delete()
+    db.session.commit()
+    flash('Cart cleared!', 'info')
+    return redirect(url_for('cart'))
+
+@app.route('/search')
+def search():
+    query = request.args.get('q', '')
+    category = request.args.get('category', '')
+    min_price = request.args.get('min_price', type=float)
+    max_price = request.args.get('max_price', type=float)
+    sort_by = request.args.get('sort', 'newest')
+    
+    products = Product.query
+    
+    if query:
+        products = products.filter(Product.title.ilike(f"%{query}%"))
+    if category:
+        products = products.filter_by(category=category)
+    if min_price is not None:
+        products = products.filter(Product.price >= min_price)
+    if max_price is not None:
+        products = products.filter(Product.price <= max_price)
+    
+    # Apply sorting
+    if sort_by == 'price_low':
+        products = products.order_by(Product.price.asc())
+    elif sort_by == 'price_high':
+        products = products.order_by(Product.price.desc())
+    elif sort_by == 'name':
+        products = products.order_by(Product.title.asc())
+    else:  # newest
+        products = products.order_by(Product.id.desc())
+    
+    products = products.all()
+    categories = [c[0] for c in db.session.query(Product.category).distinct()]
+    
+    return render_template('products.html',
+                         products=products,
+                         categories=categories,
+                         search_query=query,
+                         category_filter=category)
+
 if __name__ == "__main__":
-    if not os.path.exists("ecofinds.db"):
-        with app.app_context():
+    with app.app_context():
+        # Check if database exists and has data
+        if not os.path.exists("instance/ecofinds.db") or Product.query.count() == 0:
+            print("🌱 Initializing EcoFinds database...")
             db.create_all()
+            
+            # Check if we should seed with sample data
+            if Product.query.count() == 0:
+                print("📦 No products found. Run 'python seed_database.py' to populate with sample data.")
+                print("   Or register a new account and add products manually.")
+        else:
+            print("✅ Database already initialized with data")
+    
+    print("🚀 Starting EcoFinds server...")
+    print("🌐 Visit: http://localhost:5000")
     app.run(debug=True)

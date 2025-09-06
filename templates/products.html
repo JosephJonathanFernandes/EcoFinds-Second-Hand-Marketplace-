@@ -1,43 +1,333 @@
 {% extends "base.html" %}
+{% block title %}Browse Products - EcoFinds{% endblock %}
+
 {% block content %}
-<h2>Product Listings</h2>
-
-<form method="GET" action="{{ url_for('index') }}" class="row mb-4">
-  <div class="col-md-6">
-    <input type="text" name="search" class="form-control"
-           placeholder="Search by title..."
-           value="{{ search_query }}">
-  </div>
-  <div class="col-md-4">
-    <select name="category" class="form-select">
-      <option value="">All Categories</option>
-      {% for c in categories %}
-        <option value="{{ c }}" {% if category_filter == c %}selected{% endif %}>{{ c }}</option>
-      {% endfor %}
-    </select>
-  </div>
-  <div class="col-md-2">
-    <button type="submit" class="btn btn-primary w-100">Filter</button>
-  </div>
-</form>
-
-<div class="row">
-  {% for p in products %}
-  <div class="col-md-4 d-flex align-items-stretch">
-    <div class="card mb-4 border-0 shadow-sm">
-      <img src="{{ p.image }}" class="card-img-top" alt="Product" style="height:220px;object-fit:cover;border-radius:16px 16px 0 0;">
-      <div class="card-body d-flex flex-column">
-        <h5 class="card-title fw-bold text-success"><i class="bi bi-box-seam me-1"></i> {{ p.title }}</h5>
-        <p class="card-text mb-2"><i class="bi bi-currency-dollar"></i> {{ p.price }} <span class="badge bg-success ms-2"><i class="bi bi-leaf me-1"></i>{{ p.category }}</span></p>
-        <p class="card-text text-muted" style="min-height:40px;">{{ p.description }}</p>
-        <div class="mt-auto">
-          {% if current_user.is_authenticated %}
-            <a href="{{ url_for('add_to_cart', pid=p.id) }}" class="btn btn-warning w-100"><i class="bi bi-cart-plus me-1"></i> Add to Cart</a>
-          {% endif %}
+<!-- Page Header -->
+<div class="container-fluid bg-light py-5">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-8">
+        <h1 class="display-5 fw-bold text-success mb-3">
+          <i class="bi bi-grid-3x3-gap me-3"></i>Browse Sustainable Finds
+        </h1>
+        <p class="lead text-muted mb-0">Discover amazing pre-loved items and give them a second life</p>
+      </div>
+      <div class="col-lg-4 text-lg-end">
+        <div class="d-flex align-items-center justify-content-lg-end">
+          <span class="badge bg-success fs-6 me-3">
+            <i class="bi bi-leaf me-1"></i>{{ products|length }} Items Available
+          </span>
         </div>
       </div>
     </div>
   </div>
-  {% endfor %}
 </div>
+
+<!-- Advanced Search & Filter Section -->
+<div class="container py-4">
+  <div class="row">
+    <div class="col-12">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body p-8">
+          <form method="GET" action="{{ url_for('index') }}" class="row g-3">
+            <div class="col-lg-4 col-md-6">
+              <label class="form-label fw-semibold">
+                <i class="bi bi-search me-1"></i>Search Products
+              </label>
+              <input type="text" name="search" class="form-control form-control-lg" 
+                     placeholder="What are you looking for?"
+                     value="{{ search_query }}">
+            </div>
+            <div class="col-lg-3 col-md-6">
+              <label class="form-label fw-semibold">
+                <i class="bi bi-tags me-1"></i>Category
+              </label>
+              <select name="category" class="form-select form-select-lg">
+                <option value="">All Categories</option>
+                {% for c in categories %}
+                  <option value="{{ c }}" {% if category_filter == c %}selected{% endif %}>{{ c }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-lg-2 col-md-6">
+              <label class="form-label fw-semibold">
+                <i class="bi bi-currency-dollar me-1"></i>Max Price
+              </label>
+              <input type="number" name="max_price" class="form-control form-control-lg" 
+                     placeholder="Any" step="0.01" min="0">
+            </div>
+            <div class="col-lg-2 col-md-6">
+              <label class="form-label fw-semibold">
+                <i class="bi bi-sort-down me-1"></i>Sort By
+              </label>
+              <select name="sort" class="form-select form-select-lg">
+                <option value="newest">Newest First</option>
+                <option value="price_low">Price: Low to High</option>
+                <option value="price_high">Price: High to Low</option>
+                <option value="name">Name A-Z</option>
+              </select>
+            </div>
+            <div class="col-lg-1 col-md-12">
+              <label class="form-label fw-semibold">&nbsp;</label>
+              <button type="submit" class="btn btn-success btn-lg w-110">
+                <i class="bi bi-funnel me-1"></i>Filter
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Products Grid -->
+<div class="container pb-5">
+  {% if products %}
+    <!-- Results Header -->
+    <div class="row mb-4">
+      <div class="col-md-6">
+        <h3 class="fw-bold text-success">
+          {% if search_query %}
+            Search Results for "{{ search_query }}"
+          {% elif category_filter %}
+            {{ category_filter }} Items
+          {% else %}
+            All Products
+          {% endif %}
+        </h3>
+        <p class="text-muted mb-0">{{ products|length }} sustainable finds available</p>
+      </div>
+      <div class="col-md-6 text-md-end">
+        <div class="btn-group" role="group">
+          <button type="button" class="btn btn-outline-success active" id="gridView">
+            <i class="bi bi-grid-3x3-gap"></i>
+          </button>
+          <button type="button" class="btn btn-outline-success" id="listView">
+            <i class="bi bi-list"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Products Grid -->
+    <div class="row g-4" id="productsContainer">
+      {% for p in products %}
+      <div class="col-lg-3 col-md-6 col-sm-6">
+        <div class="card product-card h-100">
+          <div class="position-relative">
+            <img src="{{ p.image }}" class="card-img-top" alt="{{ p.title }}" 
+                 style="height: 250px; object-fit: cover;">
+            <div class="position-absolute top-0 end-0 m-2">
+              <span class="badge bg-success">
+                <i class="bi bi-leaf me-1"></i>Eco
+              </span>
+            </div>
+            <div class="position-absolute top-0 start-0 m-2">
+              <span class="badge bg-warning text-dark">
+                <i class="bi bi-tag me-1"></i>{{ p.category }}
+              </span>
+            </div>
+            <div class="position-absolute bottom-0 start-0 w-100 p-3">
+              <div class="d-flex justify-content-between align-items-center">
+                <span class="h4 fw-bold text-white mb-0 text-shadow">${{ p.price }}</span>
+                <div class="d-flex gap-1">
+                  <button class="btn btn-light btn-sm rounded-circle" title="Add to Wishlist">
+                    <i class="bi bi-heart"></i>
+                  </button>
+                  <button class="btn btn-light btn-sm rounded-circle" title="Quick View">
+                    <i class="bi bi-eye"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card-body d-flex flex-column">
+            <h5 class="card-title fw-bold text-success mb-2">{{ p.title }}</h5>
+            <p class="card-text text-muted small mb-3" style="min-height: 40px;">
+              {{ p.description[:80] }}{% if p.description|length > 80 %}...{% endif %}
+            </p>
+            <div class="mt-auto">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <small class="text-muted">
+                  <i class="bi bi-person-circle me-1"></i>by {{ p.owner.username }}
+                </small>
+                <div class="d-flex align-items-center">
+                  <i class="bi bi-star-fill text-warning me-1"></i>
+                  <small class="text-muted">4.8</small>
+                </div>
+              </div>
+              {% if current_user.is_authenticated %}
+                <a href="{{ url_for('add_to_cart', pid=p.id) }}" class="btn btn-warning w-100">
+                  <i class="bi bi-cart-plus me-2"></i>Add to Cart
+                </a>
+              {% else %}
+                <a href="{{ url_for('login') }}" class="btn btn-outline-success w-100">
+                  <i class="bi bi-box-arrow-in-right me-2"></i>Login to Buy
+                </a>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- Pagination (Placeholder) -->
+    <div class="row mt-5">
+      <div class="col-12">
+        <nav aria-label="Products pagination">
+          <ul class="pagination justify-content-center">
+            <li class="page-item disabled">
+              <a class="page-link" href="#" tabindex="-1">Previous</a>
+            </li>
+            <li class="page-item active">
+              <a class="page-link" href="#">1</a>
+            </li>
+            <li class="page-item">
+              <a class="page-link" href="#">2</a>
+            </li>
+            <li class="page-item">
+              <a class="page-link" href="#">3</a>
+            </li>
+            <li class="page-item">
+              <a class="page-link" href="#">Next</a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+
+  {% else %}
+    <!-- Empty State -->
+    <div class="text-center py-5">
+      <div class="mb-4">
+        <i class="bi bi-search text-muted" style="font-size: 4rem;"></i>
+      </div>
+      <h3 class="fw-bold text-muted mb-3">No Products Found</h3>
+      <p class="text-muted mb-4">
+        {% if search_query %}
+          We couldn't find any products matching "{{ search_query }}". Try adjusting your search terms.
+        {% elif category_filter %}
+          No products available in the "{{ category_filter }}" category yet.
+        {% else %}
+          No products are available at the moment. Be the first to list an item!
+        {% endif %}
+      </p>
+      <div class="d-flex gap-3 justify-content-center">
+        <a href="{{ url_for('index') }}" class="btn btn-outline-success">
+          <i class="bi bi-arrow-left me-2"></i>View All Products
+        </a>
+        {% if current_user.is_authenticated %}
+          <a href="{{ url_for('add_product') }}" class="btn btn-success">
+            <i class="bi bi-plus-circle me-2"></i>List Your Item
+          </a>
+        {% endif %}
+      </div>
+    </div>
+  {% endif %}
+</div>
+
+<!-- Eco Impact Banner -->
+<div class="container-fluid bg-success text-white py-4">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-8">
+        <h5 class="fw-bold mb-2">
+          <i class="bi bi-recycle me-2"></i>Your Impact Matters
+        </h5>
+        <p class="mb-0">Every purchase on EcoFinds helps reduce waste and promotes sustainable consumption.</p>
+      </div>
+      <div class="col-lg-4 text-lg-end">
+        <div class="d-flex align-items-center justify-content-lg-end">
+          <div class="text-center me-4">
+            <div class="h4 fw-bold mb-0">82%</div>
+            <small>Less CO₂</small>
+          </div>
+          <div class="text-center me-4">
+            <div class="h4 fw-bold mb-0">100%</div>
+            <small>Eco-Friendly</small>
+          </div>
+          <div class="text-center">
+            <div class="h4 fw-bold mb-0">∞</div>
+            <small>Impact</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<style>
+  .text-shadow {
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+  }
+  .product-card {
+    transition: var(--transition);
+    border: 1px solid rgba(0, 200, 81, 0.1);
+  }
+  .product-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-hover);
+  }
+  .product-card .card-img-top {
+    transition: var(--transition);
+  }
+  .product-card:hover .card-img-top {
+    transform: scale(1.05);
+  }
+  .btn-group .btn.active {
+    background-color: var(--primary-green);
+    border-color: var(--primary-green);
+    color: white;
+  }
+</style>
+
+<script>
+  // View toggle functionality
+  document.getElementById('gridView').addEventListener('click', function() {
+    this.classList.add('active');
+    document.getElementById('listView').classList.remove('active');
+    document.getElementById('productsContainer').className = 'row g-4';
+  });
+
+  document.getElementById('listView').addEventListener('click', function() {
+    this.classList.add('active');
+    document.getElementById('gridView').classList.remove('active');
+    document.getElementById('productsContainer').className = 'row g-2';
+    
+    // Convert cards to list view
+    const cards = document.querySelectorAll('.product-card');
+    cards.forEach(card => {
+      card.className = 'card product-card mb-3';
+      const col = card.parentElement;
+      col.className = 'col-12';
+    });
+  });
+
+  // Add to wishlist functionality (placeholder)
+  document.querySelectorAll('[title="Add to Wishlist"]').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      const icon = this.querySelector('i');
+      if (icon.classList.contains('bi-heart')) {
+        icon.className = 'bi bi-heart-fill text-danger';
+        this.title = 'Remove from Wishlist';
+      } else {
+        icon.className = 'bi bi-heart';
+        this.title = 'Add to Wishlist';
+      }
+    });
+  });
+
+  // Quick view functionality (placeholder)
+  document.querySelectorAll('[title="Quick View"]').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      // This would open a modal with product details
+      alert('Quick view feature coming soon!');
+    });
+  });
+</script>
 {% endblock %}
