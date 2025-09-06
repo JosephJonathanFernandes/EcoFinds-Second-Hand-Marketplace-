@@ -7,6 +7,7 @@ It’s a simple web app built with **Flask + SQLite** that allows users to regis
 ---
 
 ## 🚀 Features
+
 - 🔑 **User Authentication** (Register/Login/Logout)
 - 👤 **User Dashboard** – view your listings
 - 📦 **Product Listings (CRUD)** – Add, view, edit, delete products
@@ -17,12 +18,14 @@ It’s a simple web app built with **Flask + SQLite** that allows users to regis
 ---
 
 ## 🛠️ Tech Stack
+
 - **Backend:** Flask (Python)
 - **Database:** SQLite (via SQLAlchemy)
 - **Auth:** Flask-Login
 - **Frontend:** Bootstrap (CDN for fast styling)
 
 ---
+
 ## 📂 Project Structure
 
 ```
@@ -42,31 +45,49 @@ ecofinds/
 │   └── purchases.html
 ```
 
+---
+
 ## ⚙️ Installation & Setup
 
 ### 1. Clone the repository
+
 ```bash
 git clone https://github.com/your-username/ecofinds.git
 cd ecofinds
+```
 
-2. Create & activate virtual environment
+### 2. Create & activate virtual environment
+
+For Linux / macOS:
+```bash
 python -m venv venv
-source venv/bin/activate   # Linux / macOS
-venv\Scripts\activate      # Windows
+source venv/bin/activate
+```
 
-3. Install dependencies
+For Windows:
+```bash
+python -m venv venv
+venv\Scripts\activate
+```
+
+### 3. Install dependencies
+
+```bash
 pip install -r requirements.txt
+```
 
-4. Run the app
+### 4. Run the app
+
+```bash
 python app.py
+```
 
-""
-
-Open http://127.0.0.1:5000 in your browser 🎉
+Open [http://127.0.0.1:5000](http://127.0.0.1:5000) in your browser 🎉
 
 ---
 
-## � Usage
+## 📝 Usage
+
 - Register/Login as a new user
 - Add a product with title, category, description, price
 - Browse products from the main feed
@@ -76,6 +97,7 @@ Open http://127.0.0.1:5000 in your browser 🎉
 ---
 
 ## 💡 Future Enhancements
+
 - Image upload support (instead of placeholder URLs)
 - Search + category filters
 - Payment gateway integration
@@ -85,9 +107,11 @@ Open http://127.0.0.1:5000 in your browser 🎉
 ---
 
 ## 🤝 Contributing
+
 Pull requests are welcome! For major changes, please open an issue first to discuss what you would like to change.
 
 ---
 
 ## 📄 License
+
 This project is licensed under the MIT License.
