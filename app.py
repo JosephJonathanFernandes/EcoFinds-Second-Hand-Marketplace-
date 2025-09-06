@@ -1,13 +1,15 @@
 
 
 # ---------------- Routes ----------------
-from flask import Flask, render_template, redirect, url_for, request, flash
+from flask import Flask, render_template, redirect, url_for, request, flash, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, login_user, logout_user, login_required, UserMixin, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 import os
 import time
+import threading
+from dynamic_data_service import dynamic_service
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'hackathon-secret'
@@ -289,6 +291,94 @@ def search():
                          search_query=query,
                          category_filter=category)
 
+# ---------------- Real-time API Endpoints ----------------
+
+@app.route('/api/market-insights')
+def market_insights():
+    """Get real-time market insights"""
+    try:
+        insights = dynamic_service.get_market_insights()
+        return jsonify(insights)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/trending-categories')
+def trending_categories():
+    """Get currently trending categories"""
+    try:
+        trending = dynamic_service.get_trending_categories()
+        return jsonify({'trending': trending})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/generate-product')
+@login_required
+def generate_product():
+    """Generate a new dynamic product"""
+    try:
+        category = request.args.get('category', 'Clothing')
+        product_data = dynamic_service.generate_dynamic_product(category)
+        
+        # Create the product
+        product = Product(
+            title=product_data['title'],
+            description=product_data['description'],
+            category=product_data['category'],
+            price=product_data['price'],
+            image=product_data['image'],
+            user_id=current_user.id
+        )
+        
+        db.session.add(product)
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'product': {
+                'id': product.id,
+                'title': product.title,
+                'price': product.price,
+                'image': product.image
+            }
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/update-prices')
+def update_prices():
+    """Update product prices dynamically"""
+    try:
+        products = Product.query.all()
+        updated_count = 0
+        
+        for product in products:
+            if request.args.get('force') == 'true' or time.time() % 300 < 60:  # Update every 5 minutes
+                old_price = product.price
+                new_price = dynamic_service.get_dynamic_pricing(product.category, old_price)
+                product.price = new_price
+                updated_count += 1
+        
+        if updated_count > 0:
+            db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'updated_count': updated_count,
+            'timestamp': time.time()
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/eco-impact/<int:product_id>')
+def eco_impact(product_id):
+    """Get environmental impact for a product"""
+    try:
+        product = Product.query.get_or_404(product_id)
+        impact = dynamic_service._calculate_eco_impact(product.category, product.price)
+        return jsonify(impact)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 if __name__ == "__main__":
     with app.app_context():
         # Check if database exists and has data
@@ -298,7 +388,7 @@ if __name__ == "__main__":
             
             # Check if we should seed with sample data
             if Product.query.count() == 0:
-                print("📦 No products found. Run 'python seed_database.py' to populate with sample data.")
+                print("📦 No products found. Run 'python dynamic_seed_database.py' to populate with dynamic data.")
                 print("   Or register a new account and add products manually.")
         else:
             print("✅ Database already initialized with data")
