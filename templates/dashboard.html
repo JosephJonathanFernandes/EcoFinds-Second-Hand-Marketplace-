@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>My Listings</h2>
+<a href="{{ url_for('add_product') }}" class="btn btn-success mb-3">+ Add Product</a>
+<div class="row">
+  {% for p in products %}
+  <div class="col-md-4">
+    <div class="card mb-3">
+      <img src="{{ p.image }}" class="card-img-top" alt="Product">
+      <div class="card-body">
+        <h5 class="card-title">{{ p.title }}</h5>
+        <p class="card-text">${{ p.price }}</p>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

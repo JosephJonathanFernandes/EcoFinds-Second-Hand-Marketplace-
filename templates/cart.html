@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>My Cart</h2>
+{% if products %}
+<div class="row">
+  {% for p in products %}
+  <div class="col-md-4">
+    <div class="card mb-3">
+      <img src="{{ p.image }}" class="card-img-top" alt="Product">
+      <div class="card-body">
+        <h5 class="card-title">{{ p.title }}</h5>
+        <p class="card-text">${{ p.price }}</p>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+<a href="{{ url_for('purchase') }}" class="btn btn-success">Purchase All</a>
+{% else %}
+<p>Your cart is empty.</p>
+{% endif %}
+{% endblock %}
