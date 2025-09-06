@@ -388,7 +388,7 @@ if __name__ == "__main__":
             
             # Check if we should seed with sample data
             if Product.query.count() == 0:
-                print("📦 No products found. Run 'python dynamic_seed_database.py' to populate with dynamic data.")
+                print("📦 No products found. Run 'python realistic_seed_database.py' to populate with realistic data.")
                 print("   Or register a new account and add products manually.")
         else:
             print("✅ Database already initialized with data")

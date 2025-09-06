@@ -56,28 +56,38 @@ def check_dependencies():
     return True
 
 def setup_database():
-    """Set up the database with dynamic data"""
-    print("\n🗄️ Setting up database with dynamic data...")
+    """Set up the database with realistic data"""
+    print("\n🗄️ Setting up database with realistic data...")
     
     try:
-        # Run dynamic seeding
-        result = subprocess.run([sys.executable, 'dynamic_seed_database.py'], 
+        # Run realistic seeding
+        result = subprocess.run([sys.executable, 'realistic_seed_database.py'], 
                               capture_output=True, text=True, check=True)
-        print("✅ Database populated with dynamic data!")
+        print("✅ Database populated with realistic data!")
         return True
     except subprocess.CalledProcessError as e:
-        print(f"❌ Database setup failed: {e}")
-        print("🔄 Trying fallback seeding...")
+        print(f"❌ Realistic seeding failed: {e}")
+        print("🔄 Trying dynamic seeding...")
         
         try:
-            # Try fallback seeding
-            result = subprocess.run([sys.executable, 'seed_database.py'], 
+            # Try dynamic seeding
+            result = subprocess.run([sys.executable, 'dynamic_seed_database.py'], 
                                   capture_output=True, text=True, check=True)
-            print("✅ Database populated with fallback data!")
+            print("✅ Database populated with dynamic data!")
             return True
         except subprocess.CalledProcessError as e2:
-            print(f"❌ Fallback seeding also failed: {e2}")
-            return False
+            print(f"❌ Dynamic seeding failed: {e2}")
+            print("🔄 Trying fallback seeding...")
+            
+            try:
+                # Try fallback seeding
+                result = subprocess.run([sys.executable, 'seed_database.py'], 
+                                      capture_output=True, text=True, check=True)
+                print("✅ Database populated with fallback data!")
+                return True
+            except subprocess.CalledProcessError as e3:
+                print(f"❌ All seeding methods failed: {e3}")
+                return False
 
 def start_realtime_updater():
     """Start the real-time updater in background"""
