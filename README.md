@@ -23,27 +23,24 @@ It’s a simple web app built with **Flask + SQLite** that allows users to regis
 - **Frontend:** Bootstrap (CDN for fast styling)
 
 ---
-
 ## 📂 Project Structure
 
-
+```
 ecofinds/
-│── app.py # Main Flask app
-│── ecofinds.db # SQLite database
-│── requirements.txt # Python dependencies
-│── .gitignore # Ignore unnecessary files
-│── templates/ # HTML templates (Bootstrap)
-│ ├── base.html
-│ ├── login.html
-│ ├── register.html
-│ ├── products.html
-│ ├── add_product.html
-│ ├── dashboard.html
-│ ├── cart.html
-│ └── purchases.html
-
-
----
+├── app.py              # Main Flask app
+├── ecofinds.db         # SQLite database
+├── requirements.txt    # Python dependencies
+├── .gitignore          # Ignore unnecessary files
+├── templates/          # HTML templates (Bootstrap)
+│   ├── base.html
+│   ├── login.html
+│   ├── register.html
+│   ├── products.html
+│   ├── add_product.html
+│   ├── dashboard.html
+│   ├── cart.html
+│   └── purchases.html
+```
 
 ## ⚙️ Installation & Setup
 
@@ -62,6 +59,8 @@ pip install -r requirements.txt
 
 4. Run the app
 python app.py
+
+""
 
 Open http://127.0.0.1:5000 in your browser 🎉
 

@@ -1,6 +1,26 @@
 {% extends "base.html" %}
 {% block content %}
 <h2>Product Listings</h2>
+
+<form method="GET" action="{{ url_for('index') }}" class="row mb-4">
+  <div class="col-md-6">
+    <input type="text" name="search" class="form-control"
+           placeholder="Search by title..."
+           value="{{ search_query }}">
+  </div>
+  <div class="col-md-4">
+    <select name="category" class="form-select">
+      <option value="">All Categories</option>
+      {% for c in categories %}
+        <option value="{{ c }}" {% if category_filter == c %}selected{% endif %}>{{ c }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-md-2">
+    <button type="submit" class="btn btn-primary w-100">Filter</button>
+  </div>
+</form>
+
 <div class="row">
   {% for p in products %}
   <div class="col-md-4">
@@ -8,7 +28,7 @@
       <img src="{{ p.image }}" class="card-img-top" alt="Product">
       <div class="card-body">
         <h5 class="card-title">{{ p.title }}</h5>
-        <p class="card-text">${{ p.price }}</p>
+        <p class="card-text">${{ p.price }} | <span class="badge bg-info">{{ p.category }}</span></p>
         {% if current_user.is_authenticated %}
           <a href="{{ url_for('add_to_cart', pid=p.id) }}" class="btn btn-warning">Add to Cart</a>
         {% endif %}

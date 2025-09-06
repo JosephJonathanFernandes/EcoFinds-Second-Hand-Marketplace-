@@ -44,10 +44,27 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 # ---------------- Routes ----------------
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def index():
-    products = Product.query.all()
-    return render_template('products.html', products=products)
+    search_query = request.args.get('search', '')
+    category_filter = request.args.get('category', '')
+
+    products = Product.query
+
+    if search_query:
+        products = products.filter(Product.title.ilike(f"%{search_query}%"))
+    if category_filter:
+        products = products.filter_by(category=category_filter)
+
+    products = products.all()
+    categories = [c[0] for c in db.session.query(Product.category).distinct()]
+
+    return render_template('products.html',
+                           products=products,
+                           categories=categories,
+                           search_query=search_query,
+                           category_filter=category_filter)
+
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
