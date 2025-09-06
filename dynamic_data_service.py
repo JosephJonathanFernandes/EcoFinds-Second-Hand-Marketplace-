@@ -80,7 +80,7 @@ class DynamicDataService:
         }
     
     def get_unsplash_image(self, category: str, keywords: List[str], product_title: str = "") -> str:
-        """Fetch real-time images from Unsplash API"""
+        """Fetch real-time images from Unsplash API with robust fallbacks"""
         try:
             # Create more specific search query based on product title
             if product_title:
@@ -109,45 +109,163 @@ class DynamicDataService:
             if cache_key in self.cache['images']:
                 return self.cache['images'][cache_key]
             
-            # Make API request
-            url = "https://api.unsplash.com/search/photos"
-            params = {
-                'query': query,
-                'per_page': 10,
-                'orientation': 'landscape',
-                'client_id': self.unsplash_access_key
-            }
-            
-            response = self.session.get(url, params=params, timeout=5)
-            
-            if response.status_code == 200:
-                data = response.json()
-                if data['results']:
-                    # Select random image from results
-                    image = random.choice(data['results'])
-                    image_url = image['urls']['regular']
-                    
-                    # Cache the result
-                    self.cache['images'][cache_key] = image_url
-                    return image_url
+            # Only try Unsplash if we have a valid access key
+            if self.unsplash_access_key and self.unsplash_access_key != 'demo_key':
+                # Make API request
+                url = "https://api.unsplash.com/search/photos"
+                params = {
+                    'query': query,
+                    'per_page': 10,
+                    'orientation': 'landscape',
+                    'client_id': self.unsplash_access_key
+                }
+                
+                response = self.session.get(url, params=params, timeout=5)
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    if data['results']:
+                        # Select random image from results
+                        image = random.choice(data['results'])
+                        image_url = image['urls']['regular']
+                        
+                        # Cache the result
+                        self.cache['images'][cache_key] = image_url
+                        return image_url
             
         except Exception as e:
             print(f"Unsplash API error: {e}")
         
-        # Fallback to category-specific placeholder
-        category_placeholders = {
-            'Electronics': 'https://images.unsplash.com/photo-1498049794561-7780e7231661?w=400&h=300&fit=crop',
-            'Clothing': 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400&h=300&fit=crop',
-            'Home & Garden': 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=300&fit=crop',
-            'Books': 'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=400&h=300&fit=crop',
-            'Sports': 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400&h=300&fit=crop',
-            'Beauty': 'https://images.unsplash.com/photo-1570194065650-d99fb4bedf0a?w=400&h=300&fit=crop',
-            'Furniture': 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=300&fit=crop',
-            'Toys': 'https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=400&h=300&fit=crop',
-            'Automotive': 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=400&h=300&fit=crop'
+        # Use reliable fallback images
+        return self._get_reliable_fallback_image(category, product_title)
+    
+    def _get_reliable_fallback_image(self, category: str, product_title: str = "") -> str:
+        """Get reliable fallback images that always work"""
+        # High-quality, reliable image sources
+        reliable_images = {
+            'Electronics': [
+                'https://images.unsplash.com/photo-1498049794561-7780e7231661?w=400&h=300&fit=crop&crop=center',
+                'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400&h=300&fit=crop&crop=center',
+                'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400&h=300&fit=crop&crop=center',
+                'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=400&h=300&fit=crop&crop=center'
+            ],
+            'Clothing': [
+                'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400&h=300&fit=crop&crop=center',
+                'https://images.unsplash.com/photo-1551028719-001c2b5d2ac3?w=400&h=300&fit=crop&crop=center',
+                'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&h=300&fit=crop&crop=center',
+                'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400&h=300&fit=crop&crop=center'
+            ],
+            'Home & Garden': [
+                'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=300&fit=crop&crop=center',
+                'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=300&fit=crop&crop=center',
+                'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=400&h=300&fit=crop&crop=center',
+                'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=300&fit=crop&crop=center'
+            ],
+            'Books': [
+                'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=400&h=300&fit=crop&crop=center',
+                'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=300&fit=crop&crop=center',
+                'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=300&fit=crop&crop=center',
+                'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=400&h=300&fit=crop&crop=center'
+            ],
+            'Sports': [
+                'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400&h=300&fit=crop&crop=center',
+                'https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=400&h=300&fit=crop&crop=center',
+                'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center',
+                'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400&h=300&fit=crop&crop=center'
+            ],
+            'Beauty': [
+                'https://images.unsplash.com/photo-1570194065650-d99fb4bedf0a?w=400&h=300&fit=crop&crop=center',
+                'https://images.unsplash.com/photo-1607619056574-7b8d3ee536b2?w=400&h=300&fit=crop&crop=center',
+                'https://images.unsplash.com/photo-1570194065650-d99fb4bedf0a?w=400&h=300&fit=crop&crop=center',
+                'https://images.unsplash.com/photo-1607619056574-7b8d3ee536b2?w=400&h=300&fit=crop&crop=center'
+            ],
+            'Furniture': [
+                'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=300&fit=crop&crop=center',
+                'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=300&fit=crop&crop=center',
+                'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=300&fit=crop&crop=center',
+                'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=300&fit=crop&crop=center'
+            ],
+            'Toys': [
+                'https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=400&h=300&fit=crop&crop=center',
+                'https://images.unsplash.com/photo-1606092195730-5d7b9af1efc5?w=400&h=300&fit=crop&crop=center',
+                'https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=400&h=300&fit=crop&crop=center',
+                'https://images.unsplash.com/photo-1606092195730-5d7b9af1efc5?w=400&h=300&fit=crop&crop=center'
+            ],
+            'Automotive': [
+                'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=400&h=300&fit=crop&crop=center',
+                'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=400&h=300&fit=crop&crop=center',
+                'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=400&h=300&fit=crop&crop=center',
+                'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=400&h=300&fit=crop&crop=center'
+            ]
         }
         
-        return category_placeholders.get(category, f"https://picsum.photos/400/300?random={hash(category + str(time.time()))}")
+        # Get category images
+        category_images = reliable_images.get(category, reliable_images['Clothing'])
+        
+        # If we have a product title, try to match it better
+        if product_title:
+            title_lower = product_title.lower()
+            
+            # Electronics matching
+            if any(word in title_lower for word in ['macbook', 'laptop', 'computer']):
+                return 'https://images.unsplash.com/photo-1498049794561-7780e7231661?w=400&h=300&fit=crop&crop=center'
+            elif any(word in title_lower for word in ['iphone', 'phone', 'mobile']):
+                return 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400&h=300&fit=crop&crop=center'
+            elif any(word in title_lower for word in ['headphones', 'airpods', 'audio']):
+                return 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400&h=300&fit=crop&crop=center'
+            elif any(word in title_lower for word in ['ipad', 'tablet']):
+                return 'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=400&h=300&fit=crop&crop=center'
+            
+            # Clothing matching
+            elif any(word in title_lower for word in ['jeans', 'pants']):
+                return 'https://images.unsplash.com/photo-1551028719-001c2b5d2ac3?w=400&h=300&fit=crop&crop=center'
+            elif any(word in title_lower for word in ['jacket', 'coat']):
+                return 'https://images.unsplash.com/photo-1551028719-001c2b5d2ac3?w=400&h=300&fit=crop&crop=center'
+            elif any(word in title_lower for word in ['handbag', 'bag', 'purse']):
+                return 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&h=300&fit=crop&crop=center'
+            elif any(word in title_lower for word in ['sneakers', 'shoes']):
+                return 'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400&h=300&fit=crop&crop=center'
+            
+            # Home & Garden matching
+            elif any(word in title_lower for word in ['bamboo', 'wooden', 'furniture']):
+                return 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=300&fit=crop&crop=center'
+            elif any(word in title_lower for word in ['plant', 'succulent', 'garden']):
+                return 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=400&h=300&fit=crop&crop=center'
+            elif any(word in title_lower for word in ['kitchen', 'utensil']):
+                return 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=300&fit=crop&crop=center'
+            
+            # Sports matching
+            elif any(word in title_lower for word in ['yoga', 'mat', 'fitness']):
+                return 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400&h=300&fit=crop&crop=center'
+            elif any(word in title_lower for word in ['bicycle', 'bike']):
+                return 'https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=400&h=300&fit=crop&crop=center'
+            elif any(word in title_lower for word in ['tennis', 'racket']):
+                return 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center'
+            
+            # Books matching
+            elif any(word in title_lower for word in ['book', 'guide', 'manual']):
+                return 'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=400&h=300&fit=crop&crop=center'
+            elif any(word in title_lower for word in ['vinyl', 'record', 'music']):
+                return 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=300&fit=crop&crop=center'
+            
+            # Beauty matching
+            elif any(word in title_lower for word in ['skincare', 'beauty', 'cosmetic']):
+                return 'https://images.unsplash.com/photo-1570194065650-d99fb4bedf0a?w=400&h=300&fit=crop&crop=center'
+            elif any(word in title_lower for word in ['toothbrush', 'dental']):
+                return 'https://images.unsplash.com/photo-1607619056574-7b8d3ee536b2?w=400&h=300&fit=crop&crop=center'
+            
+            # Toys matching
+            elif any(word in title_lower for word in ['toy', 'game', 'puzzle']):
+                return 'https://images.unsplash.com/photo-1606092195730-5d7b9af1efc5?w=400&h=300&fit=crop&crop=center'
+            elif any(word in title_lower for word in ['block', 'building']):
+                return 'https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=400&h=300&fit=crop&crop=center'
+            
+            # Automotive matching
+            elif any(word in title_lower for word in ['car', 'automotive', 'vehicle']):
+                return 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=400&h=300&fit=crop&crop=center'
+        
+        # Return random image from category
+        return random.choice(category_images)
     
     def get_dynamic_pricing(self, category: str, base_price: float) -> float:
         """Calculate dynamic pricing based on market conditions"""
