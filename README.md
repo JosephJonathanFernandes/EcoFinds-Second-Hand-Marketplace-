@@ -142,3 +142,28 @@ EcoFinds is a collaborative web application for buying and selling second-hand i
 
 ## 📑 License
 This project is for educational and demonstration purposes only.
+
+---
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Python](https://img.shields.io/badge/Python-3.11%2B-blue.svg)](https://www.python.org/)
+[![Flask](https://img.shields.io/badge/Flask-3.1.2-green.svg)](https://flask.palletsprojects.com/)
+
+---
+
+## 🛠️ Continuous Integration (CI/CD)
+- Recommended: Set up GitHub Actions for automated testing and linting.
+- Example workflow:
+  - On every push or pull request, run `pytest` and `flake8`.
+  - Fail builds on test or lint errors.
+- See [GitHub Actions documentation](https://docs.github.com/en/actions) for setup.
+
+---
+
+## 📚 Extended Documentation
+- For API details, see the Endpoints section above.
+- For database schema, see `models.py` and comments in code.
+- For form usage, see `forms.py` and template files.
+- For deployment, see Flask docs or use platforms like Heroku, Vercel, or Render.
+
+---
